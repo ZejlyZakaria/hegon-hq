@@ -173,7 +173,7 @@ Grille **identique pour tous** : c'est ce qui rend les modules commensurables. U
 | Phase | Statut |
 |---|---|
 | 0 — La carte | ✅ **faite le 2026-09-05** → [`map.md`](map.md) · chiffres regénérables par `npm run map` |
-| 1 — Purge + cliquets | ⬜ **démarrer ici** — la liste d'entrée est [`map.md` §5](map.md) |
+| 1 — Purge + cliquets | 🟡 **EN COURS** — voir §8. Liste d'entrée : [`map.md` §5](map.md) |
 | 2 — System design (doctrine) | ⬜ |
 | 3 — Audits par module (Watching d'abord) | ⬜ |
 | 4 — Vérité des docs | ⬜ |
@@ -183,3 +183,102 @@ Grille **identique pour tous** : c'est ce qui rend les modules commensurables. U
 pas, mais `FanLog` + `BestXI`/`Legends` sont **déjà construits et orphelins** ; la seule logique
 réellement manquante est le **record de prédictions** (les prédictions sont stockées mais jamais
 confrontées au résultat). Puis tennis, F1, cleanup.
+
+---
+
+## 8. ÉTAT DE SESSION — 2026-09-05 (soir), phase 1 en cours
+
+### ✅ Décidé et fait
+
+**`hq/`, `memory/` et `CLAUDE.md` restent gitignorés.** Décision owner assumée : le repo principal est
+**public sur GitHub** et sert de vitrine pour des recruteurs. `hq/` est donc devenu **son propre dépôt
+privé** — `ZejlyZakaria/hegon-hq`, commit `908c135`, push vérifié.
+
+⚠️ **ZONE SANS CLIQUET, assumée explicitement.** Aucune CI ne pourra vérifier la fraîcheur de `hq/` ni
+de `memory/` — la CI clone le dépôt public, ces fichiers n'y sont pas. Leur exactitude repose sur la
+**discipline seule**. C'est le seul endroit du projet où le principe « un mécanisme, jamais un état »
+ne s'applique pas, et il faut s'en souvenir.
+
+**Destination visée (phase 4) : découper par VOIX, pas par dossier.** `blueprint.md`, `rules/`,
+`modules/*/decisions.md` n'ont aucune empreinte IA — réécrits en voix neutre ils deviennent le
+**meilleur morceau** d'un repo public (peu de projets perso montrent des décisions écrites avec leurs
+alternatives rejetées). Ce qui décrit la *collaboration* (`CLAUDE.md`, `memory/`, session-protocol)
+reste privé.
+
+**Supabase = plan Free ⇒ AUCUNE sauvegarde** (vérifié sur la page Backups : « Free Plan does not
+include project backups »). Le dump manuel sera donc **la seule copie existante**. Rien d'autre ne
+protège les données aujourd'hui.
+
+**CLI opérationnelle** : `supabase login` ✅ · `supabase link --project-ref femvhonlpafdajyamvcu` ✅.
+⚠️ Le `Cannot find project ref` venait de l'absence de `supabase/config.toml` — le `linked-project.json`
+du 16/07 n'est plus le format lu par la CLI 2.x. Le `link` l'a régénéré. CLI **2.116.0**, Docker **27.4.0**.
+
+### ⏸️ Bloqué ce soir — réseau
+
+`supabase db dump` exécute `pg_dump` **dans un conteneur** dont la version doit correspondre exactement
+au serveur (Postgres 17.6.1) — d'où Docker, obligatoire, pas contournable proprement. Le pull de
+`supabase/postgres:17.6.1.063` (~1 Go, ~90 couches) échoue sur un wifi instable (`Retrying in…`).
+**Docker conserve les couches déjà téléchargées** ⇒ relancer la même commande reprend où ça s'était
+arrêté. Rien n'est perdu, il n'y a rien à réparer.
+
+### ▶️ REPRENDRE ICI — ce que l'owner fait, dans l'ordre
+
+⚠️ **Depuis le dossier du projet**, jamais depuis `~` : `--linked` a besoin du projet pour savoir de
+quelle base on parle.
+
+1. Les 3 dumps vers **OneDrive** (`C:/Users/ADMIN/OneDrive/hegon-backups/`) : `--role-only`, schéma,
+   `--data-only`. ⚠️ **Jamais dans le repo** — le dump de données contient son journal, son historique
+   et ses habitudes, et le repo est public. OneDrive est choisi exprès : le Desktop n'est **pas**
+   synchronisé (vérifié), donc un dump posé là vivrait sur le même disque que ce qu'il protège.
+2. Vérifier que les fichiers ne sont pas vides (`ls -lh`) — un dump de 0 octet est le piège classique.
+3. Le baseline dans le repo : `db dump --linked -f supabase/migrations/20260906000000_baseline.sql`.
+   **NE PAS COMMITER** avant relecture (vérifier qu'aucun corps de fonction n'expose quoi que ce soit).
+4. Dans le SQL Editor : `select jobid, schedule, command, jobname, active from cron.job order by jobid;`
+   et coller le résultat.
+
+### Puis moi
+
+Relire le baseline · archiver les 105 migrations dans `supabase/migrations/_archive/` · transformer les
+crons en migration versionnée · `supabase migration repair --status applied 20260906000000` (⚠️ **écrit
+une ligne de suivi, n'exécute PAS le SQL** — c'est ce qui rend `db push` sûr ensuite) · vérifier avec
+`npx supabase db diff --linked`, qui doit ne **rien** afficher = preuve mécanique que le repo décrit la
+base.
+
+⛔ **Ne JAMAIS lancer `supabase db push` avant le repair.** La table de suivi est vide : il rejouerait
+les 105 migrations sur une base qui a déjà les objets, et celles contenant un `drop`/`truncate` feraient
+de vrais dégâts.
+
+### 📦 Déménagement de dossier (décidé, à faire à une pause propre — PAS maintenant)
+
+Cible : `Desktop/MyDocuments/Hegon/hegon-app` (l'actuel `digital-second-brain`), backups dans OneDrive.
+
+**Aucun risque GitHub** — l'URL du remote vit dans `.git/config`, pas dans le nom du dossier ; les deux
+remotes et celui de `hq/` suivent. Pas de `.vercel` local ⇒ le déploiement passe par l'intégration
+GitHub et ignore le disque.
+
+⚠️ **Le piège** : la mémoire de Claude Code est indexée **par le chemin**. Après le déplacement, renommer
+`C:\Users\ADMIN\.claude\projects\c--Users-ADMIN-Desktop-MyDocuments-digital-second-brain`
+en `…-Hegon-hegon-app`, sinon toute la mémoire et l'historique disparaissent de sa vue.
+Puis supprimer `.next/` et relancer `npm install`.
+
+### ⚠️ AMENDEMENTS PROPOSÉS AU PLAN — EN ATTENTE DE GO OWNER
+
+Issus de la relecture croisée du plan (conversation system design, 2026-09-05). **Non appliqués.**
+
+1. **La doctrine (phase 2) doit nommer son cliquet.** Chaque règle indique le test ou la règle de lint
+   qui la rend impossible à violer ; celles qui n'en ont pas sont marquées **fragiles**. Sans ça, la
+   phase 2 viole la règle §2 « rien n'atterrit en prose seule ». *(La phase 0 a déjà résolu sa moitié :
+   `npm run map` régénère la carte.)*
+2. **Les tests remontent de la phase 5 vers la phase 3** — ils voyagent avec chaque audit de module.
+   Diagnostiquer les tests comme l'angle mort puis les programmer en dernier est une contradiction.
+3. **« Le contrat » sort de la checklist** et devient une **session de décision** avant la phase 2 :
+   ça ne se découvre pas dans le code, ça n'appartient qu'à l'owner. Trois futurs cohabitent
+   aujourd'hui (infra multi-tenant `org_id`/`my_orgs()`, garde démo read-only sur 6 modules, Access
+   Control documenté jamais construit).
+4. **Nouvel axe 11 — durabilité & reconstructibilité.** Absent des 10 axes, alors que c'est
+   probablement la question système n°1. C'est précisément ce que la phase 1 est en train de traiter.
+5. **La leçon des 40 h doit produire du code, pas un paragraphe** : l'alerte sur cron échoué devient un
+   **livrable nommé** de la phase 2.
+
+Nuance honnête retenue de la relecture : la corrélation « tests ↔ satisfaction » du §3 est réelle mais
+présentée trop fort — Watching a aussi eu dix fois plus de passes que Sport.
