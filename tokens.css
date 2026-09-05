@@ -1,0 +1,70 @@
+/* ============================================================
+   HEGON Design Tokens
+   Source de vérité : guidelines.md
+   Usage : coller dans globals.css sous @layer base ou @theme
+   ============================================================ */
+
+@theme {
+
+  /* ── Surfaces ─────────────────────────────────────────────── */
+  --color-surface-0:        #09090b;   /* App background */
+  --color-surface-1:        #0e0e10;   /* Cards */
+  --color-surface-2:        #141416;   /* Hover / état actif */
+  --color-surface-3:        #1a1a1d;   /* Modals, dropdowns */
+  --color-surface-overlay:  #1f1f22;   /* Inputs dans modals */
+
+  /* ── Texte ────────────────────────────────────────────────── */
+  --color-text-primary:     #e2e2e6;
+  --color-text-secondary:   #a0a0a8;
+  --color-text-tertiary:    #71717a;
+  --color-text-disabled:    #3d3d44;
+
+  /* ── Borders ──────────────────────────────────────────────── */
+  --color-border-subtle:    rgba(255, 255, 255, 0.04);
+  --color-border-default:   rgba(255, 255, 255, 0.07);
+  --color-border-strong:    rgba(255, 255, 255, 0.11);
+  --color-border-focus:     rgba(255, 255, 255, 0.20);
+
+  /* ── Sidebar ─────────────────────────────────────────────── */
+  --color-sidebar-bg:       #0e0e10;   /* surface-1 — séparation visuelle du corps */
+  --color-sidebar-active:   #141416;   /* surface-2 — item actif */
+
+  /* ── Accents par module ───────────────────────────────────── */
+  --color-accent-goals:     #22c55e;
+  --color-accent-habits:    #f43f5e;
+  --color-accent-journal:   #f97316;
+  --color-accent-tasks:     #71717a;
+  --color-accent-watching:  #8b5cf6;
+  --color-accent-sports:    #10b981;
+
+  /* ── Border radius ────────────────────────────────────────── */
+  --radius-sm:   4px;    /* Tags, badges */
+  --radius-md:   6px;    /* Boutons, inputs */
+  --radius-lg:   8px;    /* Cards standard */
+  --radius-xl:   12px;   /* Modals, panels */
+
+  /* ── Z-index ──────────────────────────────────────────────── */
+  --z-base:      0;
+  --z-sticky:    10;
+  --z-dropdown:  20;
+  --z-modal:     30;
+  --z-overlay:   40;
+  --z-toast:     50;
+
+  /* ── Motion (CSS-only transitions) ───────────────────────── */
+  --motion-fast:    100ms;   /* Hover, focus */
+  --motion-normal:  150ms;   /* State transitions simples */
+  --motion-slow:    200ms;   /* Modals, panels */
+
+}
+
+/* ── Scrollbars ─────────────────────────────────────────────── */
+::-webkit-scrollbar              { width: 4px; height: 4px; }
+::-webkit-scrollbar-track        { background: transparent; }
+::-webkit-scrollbar-thumb        { background: rgba(255,255,255,0.08); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover  { background: rgba(255,255,255,0.15); }
+
+/* ── Motion avancé (spring) ──────────────────────────────────── */
+/* Spring values Framer Motion (snappy/smooth/gentle) → TypeScript */
+/* Voir guidelines.md → Section 9, et créer :                      */
+/* src/shared/motion/tokens.ts                                      */
