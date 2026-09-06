@@ -213,7 +213,46 @@ protège les données aujourd'hui.
 ⚠️ Le `Cannot find project ref` venait de l'absence de `supabase/config.toml` — le `linked-project.json`
 du 16/07 n'est plus le format lu par la CLI 2.x. Le `link` l'a régénéré. CLI **2.116.0**, Docker **27.4.0**.
 
-### ⏸️ Bloqué ce soir — réseau
+### ✅ 2026-09-06 — RECONSTRUCTIBILITÉ FAITE (le gros morceau de la phase 1)
+
+**Sauvegarde** — plan Free ⇒ aucune sauvegarde Supabase, ces fichiers sont la **seule copie** :
+`roles.sql` 297 o · `schema.sql` 224 Ko (68 tables : public 31, sport 28, watching 9) · `data.sql` 15 Mo
+(**7 633 lignes**, 71 tables, `auth.users` comprise). Dans **OneDrive**, jamais dans le repo public.
+Procédure de restauration figée dans `RESTORE.md` à côté des fichiers — avec la parade pour les **clés
+étrangères circulaires** de `tasks` et `goals` (`SET session_replication_role = replica`), sans laquelle
+`data.sql` ne se restaure pas.
+
+**Le référentiel est dans le repo** — `20260906000000_baseline.sql` (le schéma réel, capturé depuis la
+base) + `20260906000100_crons.sql` (**15 crons**, pas 14 ; idempotent). Les **105 anciennes migrations**
+sont dans `supabase/_archive_migrations/` avec un README : elles ne créaient que 36 des 64 tables, ce
+n'était plus un référentiel mais un journal incomplet.
+
+**⛔ L'interdit est levé** : `migration repair --status applied` a été fait sur les deux versions,
+`migration list` les montre alignées local/distant. **`supabase db push` est désormais sûr** — le flux
+normal reprend (`migration new` → SQL → `db push`).
+
+**Croisement crons ↔ edge functions** : 20 functions, 15 appelées par un cron, aucun cron ne pointe vers
+une function manquante. Sans déclencheur : `f1_seed_drivers`, `f1_seed_initial`, `f1_enrich_last_winners`
+(amorces à usage unique, normal), `notify-new-signup` (trigger sur `auth.users`), et
+**`tennis_sync_played_matches` qui n'a NI cron NI appelant** — candidate à la purge, à vérifier.
+
+⚠️ **`db diff --linked` sort un gros diff : c'est du BRUIT, vérifié.** Chaque objet qu'il veut
+supprimer ou créer est déjà dans le baseline (`book_quotes_updated_at`, `attachments_org_id_fkey`,
+`tasks_parent_task_id_fkey`, `media_items_sync_idx`, `tennis_matches_status_check`, les 30 triggers, 35
+fonctions, 206 policies, 241 contraintes, 138 index). Cause : `pg_dump` écrit
+`CREATE OR REPLACE TRIGGER` avec identifiants entre guillemets, et l'outil de comparaison ne réconcilie
+pas ces formes. **Ne pas repartir en chasse là-dessus.**
+
+⏳ **Reste à prouver** : que le baseline **rejoue** vraiment. Complet ≠ rejouable, et `db diff` ne peut
+pas répondre. Seule preuve = reconstruire en local (`npx supabase start`, appliquer les migrations,
+comparer aux volumes du `RESTORE.md`). Gros pull Docker ⇒ à faire à un moment choisi.
+
+**Note sécurité tranchée** : la clé `sb_publishable_` codée en dur dans `internal.call_edge` est —
+vérifié par empreinte — **identique à `NEXT_PUBLIC_SUPABASE_ANON_KEY`**, déjà livrée à tous les
+navigateurs. La committer n'expose rien de nouveau. Conséquence connue et assumée : n'importe qui peut
+invoquer les edge functions (robinet à coût, pas fuite) → **axe 5 de la passe system design**.
+
+### ⏸️ (résolu le 06/09) Bloqué le 05/09 au soir — réseau
 
 `supabase db dump` exécute `pg_dump` **dans un conteneur** dont la version doit correspondre exactement
 au serveur (Postgres 17.6.1) — d'où Docker, obligatoire, pas contournable proprement. Le pull de
