@@ -51,6 +51,14 @@ audit. Une note par axe + les écarts en une ligne chacun avec lien fichier. Pas
 valider. Si la seule justification est « c'est comme ça dans Watching », on jette la règle — sinon on
 canonise ses accidents.
 
+**⭐ Toute règle nomme son cliquet, ou se déclare FRAGILE.** *(amendement 1, validé le 2026-09-06)*
+Chaque règle de doctrine doit répondre à : **« quel test, quelle règle de lint ou quel script la rend
+impossible à violer ? »** Celles qui n'ont pas de réponse sont marquées **fragiles**, explicitement —
+on les garde, mais on sait qu'elles ne tiennent que par la discipline. Sans cette contrainte, la phase 2
+violerait la règle « rien n'atterrit en prose seule » : une doctrine sans cliquet n'est pas une règle,
+c'est un vœu. Le projet a déjà le bon modèle chez lui — `/settings/styleguide` ne peut pas mentir parce
+qu'elle lit les vrais tokens à l'exécution, et `npm run map` régénère la carte.
+
 ---
 
 ## 3. Calibration des objectifs de l'owner (corrections assumées)
@@ -94,9 +102,27 @@ par module ne fait ensuite que **vérifier la conformité**. Sans elle, un axe �
 contre quoi être jugé — on constaterait que Watching fait du client-side et Sport du server-side sans
 pouvoir dire lequel a raison. Étant globale, elle ne souffre pas du problème des 40 pages.
 
+⚠️ **PRÉALABLE — la session « contrat », à faire AVANT d'ouvrir la phase 2** *(amendement 3, validé le
+2026-09-06)*. Ce n'est pas un item d'audit : tout le reste se découvre en lisant le code, ça non. C'est
+une **décision qui n'appartient qu'à l'owner**, et tant qu'elle n'est pas prise, la moitié des autres
+axes n'ont pas de critère. L'ambiguïté coûte déjà : **trois futurs cohabitent dans la base** — l'infra
+multi-tenant (`org_id`, `my_orgs()`, partage de workspace), la garde read-only démo sur 6 modules, et
+l'Access Control documenté en 6 étapes et jamais construit — pour un usage mono-utilisateur.
+
+⭐ **LIVRABLE EN CODE — l'alerte cron** *(amendement 5, validé le 2026-09-06)*. Les axes 7 et 8 ne
+doivent pas produire un paragraphe décrivant le trou : le livrable est **l'alerte qui manque**, celle
+qui prévient qu'un cron a échoué en silence. C'est ce qui ferme la pire panne connue (40 h), c'est du
+code, et ça satisfait la règle §2. Nommé ici pour qu'il ne se dissolve pas en observation.
+
 ### Phase 3 — LES AUDITS PAR MODULE (sérialisés, un par un)
 
 Contre la doctrine de la phase 2 + la checklist du §6. **Watching en premier** (l'étalon).
+
+⭐ **LES TESTS VOYAGENT AVEC CHAQUE MODULE — ils ne sont plus en phase 5** *(amendement 2, validé le
+2026-09-06)*. Diagnostiquer les tests comme l'angle mort (§3) puis les programmer en dernier, après un
+gel de features de six phases, était une contradiction — la passe la plus utile aurait été celle qui
+avait le plus de chances de ne jamais arriver. Chaque audit de module se termine donc par **les tests de
+sa logique pure**, écrits dans la foulée. C'est l'axe 5 du §6, et il devient bloquant.
 
 ⚠️ **Le deuxième ne doit PAS être le deuxième meilleur.** Prendre un module jugé raté **mais petit** :
 la grille se fait mordre pour de vrai, la liste de corrections reste finie, et on obtient un
@@ -117,11 +143,13 @@ mais **dans `archive/`, jamais dans ce qu'on lit au quotidien**. Inclut la cure 
 En dernier **volontairement** : c'est la passe la plus coûteuse, et écrire des règles pour des modules
 qu'on va restructurer, c'est les écrire deux fois. Écrites en **CODE** (primitifs + `ds:coverage`), pas
 en prose. La base existe déjà : `npm run ds:coverage`, `/settings/styleguide`, Watching = pilote fini.
-Inclut l'ajout de tests sur la logique pure là où il n'y en a pas, en commençant par les modules Sport.
+
+⚠️ **Les tests ne sont plus ici** — ils ont été remontés en phase 3, où ils voyagent avec chaque audit
+de module *(amendement 2)*.
 
 ---
 
-## 5. Checklist SYSTEM DESIGN (phase 2 — 10 axes)
+## 5. Checklist SYSTEM DESIGN (phase 2 — 11 axes)
 
 Taillée sur ce que HEGON EST réellement.
 
@@ -129,8 +157,10 @@ Taillée sur ce que HEGON EST réellement.
 horizontal. Ce sont des sujets d'entretien pour des systèmes à millions d'utilisateurs ; HEGON est
 mono-utilisateur sur serverless et n'en aura jamais besoin. Les apprendre demandera un autre véhicule.
 
-1. **Le contrat** — ce que HEGON promet vraiment (mono-utilisateur ? démo publique ? multi-tenant via
-   `org_id` ?) et ses cibles non-fonctionnelles. Jamais écrit ; tout le reste en découle.
+1. **Le contrat** — ⚠️ **N'EST PLUS UN AXE D'AUDIT** *(amendement 3)*. C'est une **session de décision
+   owner**, à tenir **avant** d'ouvrir la phase 2 : voir le préalable en §4. Ce que HEGON promet
+   vraiment (mono-utilisateur ? démo publique ? multi-tenant via `org_id` ?) et ses cibles
+   non-fonctionnelles. Jamais écrit ; tout le reste en découle. Sa réponse ne se trouve pas dans le code.
 2. **Le modèle de données** — 3 schémas, préférence (`org_id`) vs référence globale, RLS, indexation.
 3. **Le chemin d'une requête** — auth, middleware, frontière serveur/client, **cascades séquentielles**.
    C'est ici que vit la perf, donc ici que se répond la question « aussi rapide qu'Instagram ».
@@ -146,6 +176,15 @@ mono-utilisateur sur serverless et n'en aura jamais besoin. Les apprendre demand
 9. **Déploiement, migrations, retour arrière** — le point le plus fragile : migrations appliquées **à la
    main**, `schema_migrations` vide.
 10. **Secrets et moindre privilège** — le split de clés par rôle est bon ; l'owner doit savoir l'expliquer.
+11. ⭐ **Durabilité & reconstructibilité** *(amendement 4, validé le 2026-09-06)* — **l'axe manquant, et
+    probablement la question système n°1** pour une app qui accumule des années de journal, d'historique
+    de visionnage et d'habitudes : *que se passe-t-il si je perds la base, et en combien de temps je
+    reviens ?* Il était absent des 10 axes et traînait dans `project_ideas_backlog` comme une « idée » —
+    le mauvais rayon. Couvre : sauvegarde, **restauration testée**, rétention, et la capacité du repo à
+    reconstruire l'app entière (schéma + crons + edge functions + secrets).
+    **Déjà largement traité en phase 1 les 05-06/09** — il reste la preuve de restauration (mardi
+    2026-09-09) et la question de la **régularité** des sauvegardes, qui n'est pas encore réglée : le
+    plan Free ne donne rien, donc chaque dump est manuel.
 
 ---
 
@@ -243,9 +282,28 @@ fonctions, 206 policies, 241 contraintes, 138 index). Cause : `pg_dump` écrit
 `CREATE OR REPLACE TRIGGER` avec identifiants entre guillemets, et l'outil de comparaison ne réconcilie
 pas ces formes. **Ne pas repartir en chasse là-dessus.**
 
-⏳ **Reste à prouver** : que le baseline **rejoue** vraiment. Complet ≠ rejouable, et `db diff` ne peut
-pas répondre. Seule preuve = reconstruire en local (`npx supabase start`, appliquer les migrations,
-comparer aux volumes du `RESTORE.md`). Gros pull Docker ⇒ à faire à un moment choisi.
+⏳ **RESTE À PROUVER — reporté au mardi 2026-09-09** (décision owner : wifi trop faible ce week-end,
+un pull d'1 Go interrompu laisserait un état bancal à démêler).
+
+Ce qui est prouvé : la copie **existe** et elle est **fidèle** (extraite de la base, comptes vérifiés).
+Ce qui ne l'est pas : que ces fichiers **rejouent** — que le schéma se recrée dans une base vide sans
+erreur, et que les données se rechargent aux mêmes volumes. *La roue de secours est dans le coffre ; on
+n'a pas encore vérifié qu'elle se monte sur la voiture.*
+
+**La procédure, mardi :** `npx supabase start` (monte un Supabase complet en local — **ne touche RIEN
+en ligne** — et applique les migrations dans une base vierge : si le baseline ne rejoue pas, la commande
+échoue, et cette erreur EST le résultat cherché) · charger `data.sql` avec
+`SET session_replication_role = replica` (obligatoire, clés étrangères circulaires de `tasks`/`goals`) ·
+comparer aux volumes du `RESTORE.md` · `npx supabase stop`.
+
+**Coût réel ≈ 1 Go**, pas 3 : le `db diff` du 06/09 a déjà mis en cache **postgres 3,11 Go, storage-api
+838 Mo, edge-runtime 712 Mo, realtime 394 Mo et gotrue 61,5 Mo**. ⭐ `gotrue` étant présent, le schéma
+`auth` sera créé — donc les contraintes vers `auth.users` ne casseront pas, et le test local devient
+**plus fidèle et moins cher** qu'un second projet Supabase. La question de la limite de projets du plan
+Free devient sans objet.
+
+⚠️ Conflit de ports possible (54321/54322) avec le conteneur `fullstack-intern-test` qui tourne —
+l'arrêter le temps du test si besoin.
 
 **Note sécurité tranchée** : la clé `sb_publishable_` codée en dur dans `internal.call_edge` est —
 vérifié par empreinte — **identique à `NEXT_PUBLIC_SUPABASE_ANON_KEY`**, déjà livrée à tous les
@@ -300,9 +358,9 @@ GitHub et ignore le disque.
 en `…-Hegon-hegon-app`, sinon toute la mémoire et l'historique disparaissent de sa vue.
 Puis supprimer `.next/` et relancer `npm install`.
 
-### ⚠️ AMENDEMENTS PROPOSÉS AU PLAN — EN ATTENTE DE GO OWNER
+### ✅ AMENDEMENTS — VALIDÉS ET APPLIQUÉS le 2026-09-06
 
-Issus de la relecture croisée du plan (conversation system design, 2026-09-05). **Non appliqués.**
+Issus de la relecture croisée du plan (conversation system design, 2026-09-05). **Go owner le 2026-09-06 — les cinq sont intégrés dans le plan ci-dessus.** Gardés listés ici pour la traçabilité : ils disent ce qui a changé et pourquoi.
 
 1. **La doctrine (phase 2) doit nommer son cliquet.** Chaque règle indique le test ou la règle de lint
    qui la rend impossible à violer ; celles qui n'en ont pas sont marquées **fragiles**. Sans ça, la
