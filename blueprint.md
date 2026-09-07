@@ -54,6 +54,13 @@
 
 ## 2. Positionnement produit
 
+> ⚠️ **Recadré le 2026-09-07 — lire `hq/product-strategy.md`.** Ce paragraphe décrit HEGON comme de la
+> **gestion de la vie** (cadrage productivité). L'origine réelle du projet est une **collection** — la
+> même obsession que les cartes Yu-Gi-Oh et le maillot du joueur favori, avec pour intention d'ouvrir
+> l'app dans 20 ans et de montrer à ses enfants ce qu'on a vécu. Ce n'est pas un détail de vocabulaire :
+> collection et productivité sont deux marchés opposés (l'une accumule, l'autre vide), et le
+> différenciateur défendable de HEGON est **l'agrégation transversale**, pas la gestion.
+
 **Application web premium personnelle qui centralise la gestion de la vie** — objectifs, habitudes, tâches, connaissances, culture, sport, voyage, lecture, visionnage, journal.
 
 Elle vise le **niveau de cohérence et de sensation d'un OS** (Linear, Superhuman, Things 3, Craft) mais elle tourne dans un navigateur et assume sa nature d'app web.
