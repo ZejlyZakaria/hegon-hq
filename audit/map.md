@@ -201,8 +201,11 @@ et [`app/page.tsx`](../../src/app/page.tsx) (le résolveur de home).
   prose seule »* est donc plus dure qu'écrite — ici, la prose n'atterrit nulle part du tout.
   *(Arbitrage owner, pas une correction à faire d'office : ces fichiers contiennent du contexte
   personnel. Voir §5.)*
-- **Route morte livrée en prod** : [`/icon-lab`](../../src/app/%28main%29/icon-lab/page.tsx), **zéro
-  lien entrant**, accessible à qui connaît l'URL.
+- ~~**Route morte livrée en prod** : `/icon-lab`, accessible à qui connaît l'URL.~~
+  ⚠️ **FAUX — corrigé le 2026-09-07.** Vérifié : `git ls-files` ne le connaît pas et `git log` n'en a
+  aucune trace. `src/app/(main)/icon-lab/` et `src/shared/components/app-icon/` sont **gitignorés**
+  (lignes 66-67), donc Vercel — qui construit depuis GitHub — ne les a jamais vus. C'est un labo
+  **strictement local**, jamais déployé. Rien à supprimer côté repo.
 - **`hq/log/` s'arrête en juin.** Un seul fichier (`2026-04-a-06.md`) alors que le protocole impose un
   fichier par mois — juillet / août / septembre (Watching v2, toute la refonte Football) ne sont pas
   journalisés.

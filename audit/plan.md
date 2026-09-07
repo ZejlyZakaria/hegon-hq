@@ -380,8 +380,35 @@ n'avait pas sa forme (héros 72px vs bande de cartes 44px). Mieux vaut aucun squ
 **Vérifications** : `tsc` ✅ · `eslint --max-warnings 0` ✅ · **295 tests verts** · **`knip:ci` exit 0**.
 ⏳ Non vérifié : le rendu à l'écran (vérification owner).
 
-▶️ **Suite immédiate** : brancher `knip:ci` + `test` + `ds:coverage` dans la CI. Le cliquet étant vert,
-la CI passera dès le premier jour — c'était la condition.
+### ✅ 2026-09-07 — LA CI SURVEILLE ENFIN (point 5 de la carte, soldé)
+
+`ci.yml` faisait lint + tsc + build. Trois étapes ajoutées, **du moins cher au plus cher** (inutile
+d'attendre 3 min de build pour apprendre qu'un test échoue) :
+
+**`npm run test`** — les 14 fichiers de test existaient mais ne tournaient QUE si quelqu'un les lançait
+à la main. Personne ne le faisait. 295 tests, désormais bloquants.
+
+**`npm run knip:ci`** — le cliquet anti-code-mort.
+
+**`ds:coverage` + `git diff --exit-code`** — on régénère et on exige que le fichier commité soit
+identique. C'est ce qui rend enfin VRAIE la promesse écrite en tête du fichier (« generated from the
+code… it cannot lie ») alors qu'il avait deux mois de retard.
+
+⚠️ **PIÈGE ÉVITÉ DE JUSTESSE — le déterminisme.** `coverage.generated.json` contenait
+`"generatedAt": "<date>"`. Deux générations le même jour sont identiques, mais **le lendemain d'un
+commit la CI aurait échoué alors que rien n'avait changé** — et un cliquet qui crie au loup finit
+désactivé, ce qui aurait annulé tout le bénéfice. Champ **retiré** de `scripts/ds-coverage.mjs` : git
+sait déjà quand un fichier a changé. La page styleguide affichait cette date ; elle annonce maintenant
+*« re-checked on every CI run »* — une garantie vaut mieux qu'un horodatage.
+
+⭐ **Démonstration involontaire de l'utilité du cliquet** : la purge faite 10 minutes plus tôt avait
+déjà rendu le fichier périmé (**475 → 447 hits**). Sans gate, il repartait à la dérive le jour même.
+
+**Vérifié en simulant la CI en local** : lint ✅ · tsc ✅ · 295 tests ✅ · `knip:ci` exit 0 ✅ ·
+`ds:coverage` déterministe (même md5 sur deux exécutions) ✅.
+
+⚠️ **Correction portée à la carte** : `/icon-lab` n'est **PAS** « livré en prod ». Vérifié —
+non suivi par git, aucune trace dans l'historique, gitignoré : Vercel ne l'a jamais vu. Labo local.
 
 ### ⏸️ (résolu le 06/09) Bloqué le 05/09 au soir — réseau
 
