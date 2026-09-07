@@ -219,9 +219,22 @@ Grille **identique pour tous** : c'est ce qui rend les modules commensurables. U
 | 5 — UI/UX + design system | ⬜ |
 
 **Reprise après le chantier** (gelé, ne pas y toucher avant) : page stats football — la route n'existe
-pas, mais `FanLog` + `BestXI`/`Legends` sont **déjà construits et orphelins** ; la seule logique
-réellement manquante est le **record de prédictions** (les prédictions sont stockées mais jamais
-confrontées au résultat). Puis tennis, F1, cleanup.
+pas. La logique manquante est le **record de prédictions** (les prédictions sont stockées mais jamais
+confrontées au résultat).
+
+⚠️ **`FanLog` + `BestXI`/`Legends` ne sont PLUS dans le code** — supprimés par la purge du 2026-09-07
+(voir §8). **1 395 lignes récupérables intégralement** depuis le commit **`2b0b3fb`** :
+
+```bash
+git show 2b0b3fb --stat                                    # voir les 8 fichiers
+git checkout 2b0b3fb -- src/modules/sports/football/components/squad/     # BestXI + Legends (1 272 l.)
+git checkout 2b0b3fb -- src/modules/sports/football/components/fanlog/    # FanLog (95 l.)
+git checkout 2b0b3fb -- src/modules/sports/football/hooks/useFanLog.ts
+```
+
+Le service garde `getFanLog()` et `getBestXI()` — seuls les composants sont partis. ⚠️ Ils portaient
+encore de l'`emerald` codé en dur (avant le passage au lime), donc une reprise telle quelle demandera
+de toute façon une passe couleur.
 
 ---
 
@@ -334,6 +347,41 @@ dans une migration n'est pas une preuve — `grep` en est une.
 fonctions sport, des 8 champs morts, des 4 helpers orphelins, de `getTasksActivityByDay` (0 appelant),
 et des types `DashboardSportEvent`/`SportType`. `tsc` ✅ · `eslint --max-warnings 0` ✅ · **295 tests
 verts**. ⏳ Non vérifié : le rendu réel du dashboard à l'écran (vérification owner).
+
+### ✅ 2026-09-07 — `knip.json` + PURGE : le premier cliquet est posé et il est VERT
+
+**`knip` épinglé en devDependency** (6.34.0) — il se retéléchargeait à chaque `npx`, donc CI et poste
+local ne voyaient pas la même version. Deux commandes : `npm run knip` (rapport complet) et
+`npm run knip:ci` (**le cliquet**, `--include files,dependencies,unlisted,unresolved`).
+
+⭐ **Le cliquet ne bloque PAS sur les exports inutilisés, et c'est délibéré.** Un fichier orphelin ou
+une dépendance jamais chargée est un fait ; un *export* inutilisé, souvent non — les primitifs
+vendorisés de `shared/components/ui/` exposent l'API complète du composant et `npx shadcn add` les
+réécrirait. **Un cliquet qu'on désactive ne protège rien.** Les 46 exports restent en information.
+
+⭐ **La config est courte parce que knip connaît déjà Next.js.** Ma première version listait l'App
+Router, `middleware.ts`, `instrumentation*`, `next/vitest/postcss/eslint.config` — knip a répondu
+« redundant entry pattern » pour chacune. Il ne reste que ce qu'il ne peut PAS deviner : les **20 edge
+functions** (appelées par des crons *depuis la base*), les **16 scripts `.mjs`**, Sentry, les tests.
+Sans ça il les déclarait mortes — 36 entrées, soit toute l'alimentation automatique de HEGON.
+Explications dans `knip.README.md`.
+
+**Purge — 1 395 lignes + 1 dépendance.** 8 fichiers football orphelins (récupérables depuis `2b0b3fb`,
+voir §7) et `@radix-ui/react-dialog`, reliquat : `dialog.tsx` importe depuis le paquet unifié `radix-ui`.
+
+⭐ **Deux squelettes FANTÔMES trouvés au passage** (aucun rapport avec knip — trouvés en lisant) :
+`loading.tsx` de football dessinait `FootballHeroSkeleton` (le héros a été supprimé en août) **et**
+`FootballBestXISkeleton`. Soit **2 blocs sur 5 promis à chaque chargement et jamais livrés** → saut de
+mise en page à chaque visite. Retirés, et les 2 fonctions supprimées de `SportSkeletons.tsx`
+(848 → 759 lignes). ⏳ **Dette assumée** : `FollowingStrip` n'a plus de squelette du tout — l'ancien
+n'avait pas sa forme (héros 72px vs bande de cartes 44px). Mieux vaut aucun squelette qu'un faux ; en
+écrire un vrai lors de la passe UI/UX du module (axe 6).
+
+**Vérifications** : `tsc` ✅ · `eslint --max-warnings 0` ✅ · **295 tests verts** · **`knip:ci` exit 0**.
+⏳ Non vérifié : le rendu à l'écran (vérification owner).
+
+▶️ **Suite immédiate** : brancher `knip:ci` + `test` + `ds:coverage` dans la CI. Le cliquet étant vert,
+la CI passera dès le premier jour — c'était la condition.
 
 ### ⏸️ (résolu le 06/09) Bloqué le 05/09 au soir — réseau
 
