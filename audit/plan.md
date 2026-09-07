@@ -310,6 +310,31 @@ vérifié par empreinte — **identique à `NEXT_PUBLIC_SUPABASE_ANON_KEY`**, d�
 navigateurs. La committer n'expose rien de nouveau. Conséquence connue et assumée : n'importe qui peut
 invoquer les edge functions (robinet à coût, pas fuite) → **axe 5 de la passe system design**.
 
+### ✅ 2026-09-06 — BUG DASHBOARD CORRIGÉ (et la carte se trompait sur sa nature)
+
+**Ce n'était pas « la section football est vide depuis 28 jours »** — il n'y a plus de section football
+dans le home screen. Le vrai défaut est ailleurs et plus large : `getDashboardData` calculait encore
+**tout le contenu de l'ANCIEN dashboard** (football/tennis/F1 du jour, événements à venir, tâche
+prioritaire), alors que `dashboard-os` ne lit que **2 champs sur 10** — `tasks` et
+`inProgressMediaList`. Mesuré champ par champ et fonction par fonction.
+
+Donc **5 requêtes sport à chaque chargement, jetées ensuite** — dont 2 qui interrogeaient
+`sport.football_next_matches`, table supprimée le 2026-08-09, et qui levaient une erreur avalée par le
+`Promise.allSettled`.
+
+⭐ **La leçon, et elle vaut pour l'axe 7** : le garde-fou a parfaitement fonctionné — **il a masqué la
+panne pendant 28 jours**. Un `allSettled` sans observabilité ne protège pas, il aveugle. Même schéma
+que les 40 h.
+
+⚠️ **Et la migration mentait** : `20260809_football_drop_widget_tables.sql` affirmait que ces fonctions
+dashboard étaient « jamais appelées ». Elles l'étaient, depuis l'agrégateur. Une note écrite à la main
+dans une migration n'est pas une preuve — `grep` en est une.
+
+**Fait** : `service.ts` **500 → 97 lignes**, `types.ts` **72 → 37** (−438 lignes). Suppression des 5
+fonctions sport, des 8 champs morts, des 4 helpers orphelins, de `getTasksActivityByDay` (0 appelant),
+et des types `DashboardSportEvent`/`SportType`. `tsc` ✅ · `eslint --max-warnings 0` ✅ · **295 tests
+verts**. ⏳ Non vérifié : le rendu réel du dashboard à l'écran (vérification owner).
+
 ### ⏸️ (résolu le 06/09) Bloqué le 05/09 au soir — réseau
 
 `supabase db dump` exécute `pg_dump` **dans un conteneur** dont la version doit correspondre exactement
