@@ -4,6 +4,10 @@
 > démarre en lisant CE fichier, pas à froid. Il est mis à jour au fil des passes — c'est lui qui dit
 > où on en est.
 >
+> 🔴 **TROU OUVERT — SAUVEGARDE DES DONNÉES NON AUTOMATISÉE.** `data.sql` est figé au
+> **2026-09-06** et vieillit chaque jour. La **structure** est résolue (migrations dans git), les
+> **données** ne le sont pas. → à traiter à l'**axe 11** de la phase 2. **Ne pas l'oublier.**
+>
 > ⛔ **Gel des features pendant tout le chantier.** Sport (page stats football, tennis, F1) est
 > volontairement suspendu. On ne reprend le build qu'une fois la fondation posée.
 
@@ -182,9 +186,31 @@ mono-utilisateur sur serverless et n'en aura jamais besoin. Les apprendre demand
     reviens ?* Il était absent des 10 axes et traînait dans `project_ideas_backlog` comme une « idée » —
     le mauvais rayon. Couvre : sauvegarde, **restauration testée**, rétention, et la capacité du repo à
     reconstruire l'app entière (schéma + crons + edge functions + secrets).
-    **Déjà largement traité en phase 1 les 05-06/09** — il reste la preuve de restauration (mardi
-    2026-09-09) et la question de la **régularité** des sauvegardes, qui n'est pas encore réglée : le
-    plan Free ne donne rien, donc chaque dump est manuel.
+    **Traité en phase 1 (05-09/09)** : sauvegarde faite, restauration **prouvée**, reconstructibilité
+    fermée. 🔴 **IL RESTE UN TROU, ET C'EST LE DERNIER : la RÉGULARITÉ.**
+
+    **La structure est résolue** — chaque changement passe par une migration versionnée dans git, donc
+    le repo suit tout seul. ⚠️ Une seule condition, et c'est l'ancienne habitude qui est le risque :
+    **tout changement DOIT passer par une migration**. Une colonne ajoutée à la main dans l'éditeur SQL
+    et le repo redevient faux — c'est exactement ce qui avait produit les 28 tables sans migration.
+    **Cette règle n'a AUCUN cliquet** (règle §2 ⇒ elle est **FRAGILE**, assumée).
+
+    **Les données ne le sont pas** : `data.sql` est figé au 2026-09-06 et l'écart grandit chaque jour.
+    La structure se reconstruit depuis le repo ; **les données ne se reconstruisent depuis rien.**
+
+    ⭐ **Nuance qui change le calcul — toutes les données ne se valent pas** : les **1,3 Mo de
+    référence** (matchs, classements, palmarès) sont **régénérables** par les crons ; les **13 Mo
+    personnels** (takes, notes, journal, habitudes) sont **irremplaçables**. Une sauvegarde ciblée sur
+    le personnel serait bien plus petite et plus rapide.
+
+    **Options évaluées le 2026-09-09** :
+    - ⭐ **Action GitHub programmée (recommandée)** — hebdomadaire, sur les tables personnelles, vers le
+      repo privé `hegon-hq` ou en artefact. Tourne **sans le PC allumé, sans Docker**, gratuit.
+      ⚠️ 2 points à régler : le runner a `pg_dump` **16** alors que le serveur est en **17.6** (installer
+      le client PGDG 17), et choisir la destination + la rétention. Mot de passe en secret GitHub.
+    - Script local + planificateur Windows — simple mais exige PC allumé + Docker. Fragile.
+    - Manuel avec rappel (via le module Habits !) — repose sur la discipline seule, donc pourrira.
+    - Supabase Pro (25 $/mois) — règle tout, mais coûte de l'argent.
 
 ---
 
@@ -212,8 +238,8 @@ Grille **identique pour tous** : c'est ce qui rend les modules commensurables. U
 | Phase | Statut |
 |---|---|
 | 0 — La carte | ✅ **faite le 2026-09-05** → [`map.md`](map.md) · chiffres regénérables par `npm run map` |
-| 1 — Purge + cliquets | 🟡 **EN COURS** — voir §8. Liste d'entrée : [`map.md` §5](map.md) |
-| 2 — System design (doctrine) | ⬜ |
+| 1 — Réduire le risque (purge + cliquets) | ✅ **TERMINÉE le 2026-09-09** — voir §8 |
+| 2 — System design (doctrine) | ⬜ **À OUVRIR** — son préalable (le « contrat ») est **déjà tranché** : `hq/product-strategy.md` §0 |
 | 3 — Audits par module (Watching d'abord) | ⬜ |
 | 4 — Vérité des docs | ⬜ |
 | 5 — UI/UX + design system | ⬜ |
@@ -295,8 +321,38 @@ fonctions, 206 policies, 241 contraintes, 138 index). Cause : `pg_dump` écrit
 `CREATE OR REPLACE TRIGGER` avec identifiants entre guillemets, et l'outil de comparaison ne réconcilie
 pas ces formes. **Ne pas repartir en chasse là-dessus.**
 
-⏳ **RESTE À PROUVER — reporté au mardi 2026-09-09** (décision owner : wifi trop faible ce week-end,
-un pull d'1 Go interrompu laisserait un état bancal à démêler).
+### ✅✅ 2026-09-09 — LA SAUVEGARDE EST PROUVÉE. PHASE 1 TERMINÉE.
+
+Reconstruction complète depuis zéro, en local (`npx supabase start`), **sans jamais toucher la prod** :
+
+**1. Le schéma REJOUE.** `Applying migration 20260906000000_baseline.sql` puis `20260906000100_crons.sql`
+— **aucune erreur** dans une base vierge. C'est la réponse que `db diff` ne savait pas donner.
+
+**2. Le schéma reconstruit est IDENTIQUE** : **68 tables · 206 policies RLS · 35 fonctions · 250 index
+· 33 triggers · 15 CRONS.** ⭐ Les crons sont la surprise utile : la migration avait été marquée
+« appliquée » sans jamais tourner, donc jamais testée. Elle marche.
+
+**3. Les données se rechargent** — `data.sql` (15 Mo) chargé avec `SET session_replication_role =
+replica`, **zéro erreur**. La parade documentée dans `RESTORE.md` était donc la bonne.
+
+**4. Les volumes correspondent EXACTEMENT** aux références du `RESTORE.md` :
+football_matches 2085 ✅ · media_items 904 ✅ · episode_highlights 648 ✅ · habit_completions 524 ✅ ·
+tasks 148 ✅ · et **4 comptes dans `auth.users`**.
+
+**5. ⭐ ET L'INTÉGRITÉ RÉFÉRENTIELLE TIENT.** Charger avec `session_replication_role = replica` veut
+dire qu'**aucune clé étrangère n'a été vérifiée** — les données auraient pu être incohérentes sans
+qu'on le voie. On a donc demandé à Postgres de **revalider les 129 contraintes de clé étrangère** :
+**zéro violation.** Les données ne sont pas seulement chargées, elles sont **correctes**.
+
+**Nettoyage** : `supabase stop --no-backup` (volumes supprimés — pas de copie des données perso qui
+traîne dans Docker), aucun conteneur restant, repo intact. `supabase/.branches/` ajouté au `.gitignore`
+(même catégorie que `.temp/`).
+
+⇒ **Une sauvegarde non testée n'est pas une sauvegarde. Celle-ci l'est maintenant.**
+
+---
+
+### (historique) Ce point était en attente depuis le 05/09
 
 Ce qui est prouvé : la copie **existe** et elle est **fidèle** (extraite de la base, comptes vérifiés).
 Ce qui ne l'est pas : que ces fichiers **rejouent** — que le schéma se recrée dans une base vide sans
