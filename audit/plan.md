@@ -4,9 +4,10 @@
 > démarre en lisant CE fichier, pas à froid. Il est mis à jour au fil des passes — c'est lui qui dit
 > où on en est.
 >
-> 🔴 **TROU OUVERT — SAUVEGARDE DES DONNÉES NON AUTOMATISÉE.** `data.sql` est figé au
-> **2026-09-06** et vieillit chaque jour. La **structure** est résolue (migrations dans git), les
-> **données** ne le sont pas. → à traiter à l'**axe 11** de la phase 2. **Ne pas l'oublier.**
+> 🔴 **TROU OUVERT — SAUVEGARDE DES DONNÉES NON AUTOMATISÉE.** Chaque dump est manuel : le dernier
+> date du **2026-09-09** et vieillit dès le lendemain. La **structure** est résolue (migrations dans
+> git), les **données** ne le sont pas — et c'est **le seul poste irréversible du chantier**.
+> → à traiter à l'**axe 11** de la phase 2. **Ne pas l'oublier.**
 >
 > ⛔ **Gel des features pendant tout le chantier.** Sport (page stats football, tennis, F1) est
 > volontairement suspendu. On ne reprend le build qu'une fois la fondation posée.
