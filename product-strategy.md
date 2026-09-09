@@ -199,17 +199,172 @@ Double conséquence :
 
 ---
 
-## Sujets encore à traiter (liste établie le 2026-09-07)
+## Les 7 sujets — TOUS TRAITÉS les 2026-09-07/08
 
 1. ✅ Le problème que HEGON résout pour quelqu'un d'autre — traité ci-dessus.
 2. ✅ **Est-ce que ça existe déjà ?** — traité au §2bis. Réponse : **oui, la moitié médias**.
-3. ⬜ **Le pari Jarvis.** L'owner croit qu'il lui manque la technologie ; à examiner — son avantage
-   est peut-être déjà dans ses mains.
-4. ⬜ **L'économie.** Qui paie, combien — et le chiffre que personne ne regarde : ce que **coûte** un
-   utilisateur sur la stack actuelle.
-5. ⬜ **Le partage : fonctionnalité ou moteur de croissance ?** (voir aussi l'architecture esquissée
-   ci-dessous.)
-6. ⬜ **L'issue alternative** : le SaaS n'est pas la seule sortie, ni forcément la plus rentable.
+3. ✅ **Le pari Jarvis** — traité au §8.
+4. ✅ **L'économie** — traité au §9. Chiffres mesurés.
+5. ✅ **Le partage : moteur, pas fonctionnalité** — traité au §10.
+6. ✅ **Les issues alternatives** — traité au §11. ⭐ L'open source auto-hébergeable est apparu en cours de route.
+
+---
+
+## 8. ✅ Le pari « Jarvis / Samantha » — ce qui manque n'est pas le modèle
+
+**La vision de l'owner** (précisée le 2026-09-07) : pas une IA qui affiche ce qu'il peut trouver seul
+en 10 s, mais **une Samantha** — une voix qui discute *sur* ses données, devient experte de ses
+domaines, s'améliore à l'usage, connaît son rythme et sa personnalité.
+
+### Faisabilité : 4 scénarios sur 5 sont faisables AUJOURD'HUI, pas dans un an
+
+Tâches urgentes du jour · match du jour · enregistrer une tâche + rappel le lendemain = **tool-calling
+standard**. Les outils existent déjà (`getTodayTasks()`, `getUpcomingMatches()`, `createTask()`), la
+voix passe par l'API du navigateur, les rappels par les crons + Resend déjà en place. **Du branchement,
+pas de la recherche.**
+
+### Le seul scénario difficile — et ⭐ l'architecture juste
+
+La recommandation (*« mood action, conseille-moi »*). Un modèle fait ça très bien **et très mal** : il
+sort John Wick et Mad Max, déjà vus ou déjà connus. La difficulté est de produire une reco
+**non-évidente, disponible, fondée sur le goût réel**.
+
+⭐ **L'IA ne doit PAS choisir le film. Le moteur choisit, l'IA explique et discute.**
+Le modèle est **la bouche, pas le cerveau** — c'est ce qui la rend fiable et l'empêche d'inventer.
+Et le moteur existe déjà : **For You V2** (edge function, `for_you_cache`, MMR anti-mur-de-genre).
+
+### Les vrais obstacles — aucun n'est l'IA
+
+**La couche d'action** : il ne veut pas qu'elle réponde, il veut qu'elle **ouvre les choses devant
+lui** ⇒ correspondance intention → route + état. Neuf, à construire. **La latence** : une boucle vocale
+vivante exige une réponse sous la seconde. **Le coût** : chaque conversation se paie — négligeable en
+usage perso, décisif si d'autres l'utilisent.
+
+### ⭐ L'avantage que l'owner ne voit pas
+
+**Tout le monde aura les mêmes modèles** — ils se banalisent tous les six mois. **Presque personne
+n'aura cinq ans de données de vie structurées avec des API de lecture propres.** Le fossé défendable
+n'est pas l'IA, c'est **le corpus et sa couche d'accès**.
+
+Et **le `service.ts` par module EST l'interface Jarvis** : un agent appellerait `getMediaItems()`,
+`getFanLog()`, `computeStats()`. ⇒ **L'axe 3 de l'audit construit littéralement la surface
+conversationnelle**, sans l'avoir cherché.
+
+Mieux : HEGON collecte déjà des **signaux rares**. Letterboxd sait que tu as vu un film ; HEGON sait
+que tu l'as vu **au stade** (`watched_where`), que tu l'as **revu deux fois** (`rewatches`), et **quel
+épisode t'a marqué** (`episode_highlights`), plus ton **My Take** (le *pourquoi*, pas la note). Le
+**revisionnage est l'un des signaux de goût les plus forts qui existent** — presque personne ne le
+stocke.
+
+### ⚠️ Ce qui manque, et c'est le SEUL point vraiment urgent de tout ce fichier
+
+HEGON enregistre des **décisions**, pas du **comportement**. Or la personnalité vit dans le
+comportement. Trois trous, tous **irrécupérables** :
+
+- **L'abandon** — un film arrêté à 20 min, une série lâchée saison 3, un objectif qui s'éteint.
+  Aussi révélateur que ce qu'on finit. Aujourd'hui ça disparaît sans trace.
+- **Le pourquoi** — présent dans Watching (*My Take*), absent ailleurs.
+- **Le rythme** — l'heure à laquelle on regarde, lit, ne fait rien. Présent dans Habits, nulle part
+  ailleurs.
+
+⛔ **On ne peut pas reconstruire en 2029 ce qu'on a abandonné en 2026.** Même logique que `org_id` :
+structurel, quasi gratuit (une colonne, un statut, un horodatage), **hors de prix à rattraper**.
+C'est le seul endroit où « préparer l'avenir » est justifié, parce que c'est le seul où attendre coûte
+quelque chose d'irréversible.
+
+⚠️ **Et la limite honnête** : « une IA qui s'améliore à chaque usage » n'est pas automatique — les
+modèles n'apprennent pas de l'usage. **Ce que l'IA sait de toi est une chose qu'il faut concevoir et
+stocker.** Encore un problème de modèle de données, pas de modèle de langage. ⇒ relève de la
+**phase 2, axe 2**, avec la cohérence du **temps et de l'identité entre modules** : les vraies
+questions sont temporelles et transversales (*« à quoi je m'intéressais en 2023 ? »*), et elles exigent
+que chaque module ait la même notion de « quand ». Fait pour Watching (la saga `season_years` /
+`cour_years`, « un seul écrivain d'année »), **pas fait pour Sport, Books, Habits**.
+
+### ⚠️ L'avertissement : la démo est facile, l'usage quotidien est dur
+
+Un assistant vocal fiable à 80 % est abandonné en une semaine — cliquer redevient plus rapide. C'est
+pourquoi Siri a échoué pour la plupart des gens. **La barre n'est pas « ça marche », c'est « c'est plus
+rapide que mes mains ».** « Montre-moi mes tâches » se fait en 2 s au clic : la voix ne gagnera jamais
+là. Elle gagne seulement là où l'alternative est lente ou impossible — **la reco avec son
+raisonnement, la question transversale, et la capture quand les mains sont occupées.** Soit 3 des 5
+scénarios de l'owner, pas 5.
+
+## 9. ✅ L'économie — chiffres MESURÉS sur la sauvegarde du 2026-09-06
+
+**Coût d'un utilisateur.** Sur 7 mois : **13 Mo de données personnelles** contre **1,3 Mo de référence
+partagée** ⇒ **90 % de la base est personnelle**, elle ne s'amortit pas entre utilisateurs, elle se
+multiplie. ≈ **22 Mo par utilisateur et par an**.
+⇒ Les 500 Mo du plan Supabase Free tiennent **~38 utilisateurs à cette intensité**.
+*(13 Mo pour 3 133 lignes = des lignes très grasses — probablement des charges TMDB dénormalisées dans
+`media_items`. C'est un coût **et** un sujet de licence : cacher leurs données est ce que leurs
+conditions encadrent. Voir §7.)*
+
+**⚠️ Le mur du jour où quelqu'un paie.** **Vercel Hobby interdit l'usage commercial** — facturer un
+centime impose Vercel Pro, **20 $/mois**, indépendamment du volume. Plus Supabase Pro (**25 $/mois**)
+au-delà de ~38 utilisateurs. **Plancher ≈ 540 $/an.**
+
+**L'arithmétique brutale**, au tarif de référence de la catégorie (Letterboxd Pro, 19 $/an) :
+**40 payants → 760 $ de revenus, 540 $ de coûts, ~220 $ restants par an.** Avant Stripe, impôts, et une
+seule heure de travail. Pour ~1 000 $/mois il faut **600-700 abonnés**, acquis un par un puisqu'il n'y
+a aucun effet de réseau.
+
+⛔ **ET LE PIÈGE QUI TUE LE MODÈLE : la vision Samantha (§8) et l'abonnement forfaitaire sont en
+CONFLIT DIRECT.** Le stockage coûte peu et de façon prévisible ; **l'IA coûte par conversation**. Donc
+**plus un utilisateur aime le produit, plus il coûte cher** — à prix fixe. Letterboxd n'a pas ce
+problème : un passionné leur coûte comme un tiède. Trois issues connues, toutes mauvaises : facturer à
+l'usage (personne n'aime), plafonner (casse l'expérience), ou vendre assez cher pour absorber les gros
+usages (exclut le tarif à 19 $/an).
+
+⭐ **Ce que ça confirme** : tant que HEGON est l'app de l'owner, **tous ces chiffres valent zéro** — il
+tient dans le gratuit et l'IA en usage perso coûte quelques euros par mois. Le jour où il facture, il
+**change de métier** : de développeur à opérateur, avec coûts fixes, support et pression d'acquisition.
+
+## 10. ✅ Le partage n'est pas une feature — c'est le SEUL canal de distribution
+
+Une app de collection n'a **aucun effet de réseau** (la collection est privée, elle ne recrute
+personne). Le partage est donc la seule mécanique par laquelle quelqu'un peut découvrir HEGON.
+Précédents : les listes Letterboxd, les activités Strava, et **Spotify Wrapped — probablement la
+campagne d'acquisition la plus efficace du logiciel grand public**, qui n'est qu'un artefact personnel
+qu'on poste.
+
+⛔ **« Partager mon top 10 avec un ami » ne marche PAS comme moteur** : c'est de la messagerie, ça
+touche une personne, et cette personne n'a aucune raison de vouloir HEGON.
+
+Pour qu'un partage soit un moteur, l'artefact doit passer **trois tests** : assez beau pour être posté
+**publiquement** · compréhensible par quelqu'un qui ignore ce qu'est HEGON · **donner envie d'avoir le
+même**.
+
+⭐ **Un seul artefact coche les trois : le RÉCAPITULATIF ANNUEL.**
+*« Mon 2026 : 87 films, 12 livres, 34 matchs suivis, 2 objectifs atteints, 156 jours d'habitudes »* —
+**Letterboxd ne peut produire que la première ligne.**
+
+⭐⭐ **Le différenciateur transversal (§3) et l'unique canal de distribution sont donc LA MÊME CHOSE.**
+Ce n'est pas une coïncidence, c'est la structure du produit. Base déjà présente : les stats Watching +
+le « Year Wrapped » listé en référence dans `modules/watching/vnext.md`.
+
+## 11. ✅ Les issues alternatives — dont une non envisagée
+
+**A. L'actif de carrière** — meilleur rapport en espérance, coût marginal nul, déjà en cours. Ce qui le
+rend fort n'est pas l'app mais **l'appareillage** : audit écrit, tests, cliquets CI, décisions
+d'architecture avec leurs alternatives rejetées. Très peu de projets perso montrent ça.
+
+**B. ⭐ L'OPEN SOURCE AUTO-HÉBERGEABLE — l'option que personne n'avait envisagée**, apparue en voyant
+**Floppy** dans la recherche du §2bis. Elle **inverse les trois problèmes** :
+- **L'économie s'effondre du bon côté** : chaque utilisateur paie sa propre infrastructure ⇒ coût
+  marginal nul, et **le conflit « plus il aime, plus il coûte » disparaît**.
+- **La licence s'adoucit** : usage non commercial, chacun met sa propre clé TMDB.
+- ⭐ **Les 8 modules cessent d'être un handicap.** En SaaS ils rendent le produit dur à expliquer et à
+  démarrer ; en open source, chacun prend ce qu'il veut et la richesse devient l'argument.
+
+Prix à payer : support communautaire, et ça ferme la porte du SaaS payant — porte qui, d'après le §9,
+donne sur 220 $/an.
+
+**C.** Contenu / build in public (la série LinkedIn existe déjà). **D.** Revente : irréaliste à cette
+échelle.
+
+**Classement honnête** : le **SaaS payant est le chemin le plus cher et le moins rentable**. L'actif de
+carrière est le plus rentable et il est déjà en cours. **L'open source est le seul qui transforme les
+faiblesses en forces.** ❓ Aucune décision prise — à rouvrir quand les modules seront finis.
 
 ---
 
