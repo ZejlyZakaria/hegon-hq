@@ -240,7 +240,7 @@ Grille **identique pour tous** : c'est ce qui rend les modules commensurables. U
 |---|---|
 | 0 — La carte | ✅ **faite le 2026-09-05** → [`map.md`](map.md) · chiffres regénérables par `npm run map` |
 | 1 — Réduire le risque (purge + cliquets) | ✅ **TERMINÉE le 2026-09-09** — voir §8 |
-| 2 — System design (doctrine) | ⬜ **À OUVRIR** — son préalable (le « contrat ») est **déjà tranché** : `hq/product-strategy.md` §0 |
+| 2 — System design (doctrine) | 🔵 **OUVERTE le 2026-09-09** — les 11 axes sont passés, la doctrine est écrite : [`hq/rules/system-design.md`](../rules/system-design.md). Livré en code : le **watchdog** (alerte cron + garde anti-dérive). **Restent** : la sauvegarde (décision owner : destination), les 6 cliquets de lint/test, et les 7 écarts de la §3 de la doctrine. |
 | 3 — Audits par module (Watching d'abord) | ⬜ |
 | 4 — Vérité des docs | ⬜ |
 | 5 — UI/UX + design system | ⬜ |

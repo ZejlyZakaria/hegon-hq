@@ -21,15 +21,23 @@
 d'exécution démarre en le lisant. Il contient les 6 phases, la checklist system design (10 axes), la
 checklist par module (9 axes) et le format de rapport imposé.
 
-**✅ Phase 0 (la carte) faite le 2026-09-05 → [`hq/audit/map.md`](audit/map.md).** Les chiffres se
-regénèrent par `npm run map` (`scripts/map.mjs`) — la carte ne peut donc plus pourrir en silence.
-Ce qu'elle a trouvé, en une ligne chacun : **le dashboard lit une table droppée le 09/08 et l'erreur
-est avalée par `Promise.allSettled`** (football vide depuis 27 j) · **28 tables sur 64 et 13 crons sur
-14 n'existent que dans la base** — le repo ne peut pas reconstruire HEGON · **4 catalogues de couleurs
-de modules divergent**, et le seul qui se dit « canonical » est le plus faux · **5 affirmations de
-`CLAUDE.md` §3/§4/§5/§9 sont fausses** (`cache()` de React n'est utilisé nulle part, les 3 pages Sport
-sont client, le service F1 documenté est orphelin) · **la CI ne lance ni les tests, ni `knip`, ni
-`ds:coverage`**. **▶️ Phase 1 = la liste [`map.md` §5](audit/map.md).**
+**✅ Phase 0** → [`hq/audit/map.md`](audit/map.md) (`npm run map` régénère les chiffres).
+**✅ Phase 1** → purge, cliquets CI, reconstructibilité, restauration prouvée. Chronologie : [`hq/log/2026-09.md`](log/2026-09.md).
+
+**🔵 Phase 2 OUVERTE le 2026-09-09 → LA DOCTRINE : [`hq/rules/system-design.md`](rules/system-design.md).**
+Les 11 axes sont passés. Ce qu'elle établit, en bref : le contrat est tranché (app perso, multi-tenant
+gardé, jamais construit sans usage) · **le cache a DEUX étages, pas quatre** (`cache()` de React = 0
+usage, revalidation Next = 1 usage et il vise une route inexistante) · **l'échec silencieux est le mode
+de panne dominant**, prouvé deux fois (40 h, puis 28 jours) · **Sentry ne couvre pas les robots** —
+0 ligne dans les 20 edge functions.
+**Livré en code** : le **watchdog** ([`.github/workflows/watchdog.yml`](../.github/workflows/watchdog.yml)) —
+alerte cron + garde anti-dérive du schéma, toutes les 6 h (la cadence est structurelle :
+`net._http_response` n'est gardé que ~6 h).
+**▶️ Restent en phase 2** : (1) la **sauvegarde** — décision owner sur la destination, c'est le dernier
+poste irréversible ; (2) les **6 cliquets de lint/test** nommés dans la doctrine §4B ; (3) les **7
+écarts** de la doctrine §3.
+⚠️ **Prérequis avant que le watchdog serve** : créer le secret GitHub `HEGON_DB_URL`, et semer les deux
+valeurs `null` de [`supabase/checks/expected-objects.json`](../supabase/checks/expected-objects.json).
 
 **Pourquoi** : l'owner ne tient plus la codebase (« HEGON sort de ma main »). Mesuré, pas ressenti —
 CLAUDE.md porte 6 blocs « Corrected », 19 archives mentent sur leur statut, `knip` trouve ~1 400 lignes
