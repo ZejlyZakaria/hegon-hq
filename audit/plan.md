@@ -240,7 +240,7 @@ Grille **identique pour tous** : c'est ce qui rend les modules commensurables. U
 |---|---|
 | 0 — La carte | ✅ **faite le 2026-09-05** → [`map.md`](map.md) · chiffres regénérables par `npm run map` |
 | 1 — Réduire le risque (purge + cliquets) | ✅ **TERMINÉE le 2026-09-09** — voir §8 |
-| 2 — System design (doctrine) | 🔵 **OUVERTE le 2026-09-09** — les 11 axes sont passés, la doctrine est écrite : [`hq/rules/system-design.md`](../rules/system-design.md). Livré en code : le **watchdog** (alerte cron + garde anti-dérive). **Restent** : la sauvegarde (décision owner : destination), les 6 cliquets de lint/test, et les 7 écarts de la §3 de la doctrine. |
+| 2 — System design (doctrine) | 🔵 **OUVERTE le 2026-09-09** — les 11 axes sont passés, la doctrine est écrite : [`hq/rules/system-design.md`](../rules/system-design.md). Livré en code : le **watchdog** (alerte cron + garde anti-dérive, vert depuis le 10/09) et la **sauvegarde** (`backup.yml`, 12/09 — **écrite, NON PROUVÉE, zéro run** ; hebdo, chiffrée, vers `hegon-backups`, 5 auto-vérifications ; 2 contre-examens, 10 corrections ; témoin externe healthchecks.io sur les 2 workflows ; ⚠️ 3 secrets + 1 deploy key + 1 compte healthchecks à créer, puis 1er run à valider — **le watchdog est rouge jusqu'au ping key**). **Restent** : les 6 cliquets de lint/test, les 7 écarts de la §3 de la doctrine, et la doctrine de cache (mesure bloquée sur la session expirée). |
 | 3 — Audits par module (Watching d'abord) | ⬜ |
 | 4 — Vérité des docs | ⬜ |
 | 5 — UI/UX + design system | ⬜ |

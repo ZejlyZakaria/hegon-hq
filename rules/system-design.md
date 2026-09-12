@@ -130,9 +130,32 @@ côtés** : il compte dans Postgres, et compare à des valeurs de référence **
 La **structure** se reconstruit depuis le repo (phase 1). Les **données** ne se reconstruisent depuis
 rien. Nuance qui change le coût : **1,3 Mo de référence** (matchs, classements, palmarès) sont
 régénérables par les crons ; **13 Mo personnels** (journal, takes, habitudes, notes) sont
-irremplaçables. Une sauvegarde **ciblée sur le personnel** est donc petite et rapide.
-→ **Cliquet : à construire, §4.** Aujourd'hui chaque dump est manuel ⇒ **la pente n'est pas corrigée**,
-seul le compteur l'est.
+irremplaçables. *(Nuance retirée à la construction : la référence ne pèse que 10 %, l'exclure
+n'économise rien et une liste d'exclusion peut rouiller — on sauvegarde tout.)*
+→ **Cliquet : ÉCRIT le 2026-09-12, NON PROUVÉ — zéro run à ce jour.** [`backup.yml`](../../.github/workflows/backup.yml),
+hebdomadaire, vers le dépôt privé `hegon-backups`, gzip + AES-256. Passé au contre-examen le jour
+même : **rouge par construction** dans sa première version (`pg_dump` n'écrit pas de guillemets sans
+`--quote-all-identifiers` ; `[a-z_]+` excluait les 7 tables `f1_*`) — corrigé, mais **rien n'est vrai
+tant que le premier run n'est pas vert.** Il vérifie sa sortie **cinq fois** (chaque table avec son
+nombre exact de lignes · plancher de taille et jamais < 70 % de la précédente · gzip valide ·
+**round-trip déchiffrement + recomptage avant le push** · aucune table n'a perdu > 20 % de lignes
+depuis la sauvegarde précédente) et échoue bruyamment sinon. ⚠️ **Seul le comptage protège le
+personnel** : `media_items` = 85 % du dump, `public.*` ≈ 200 Ko — la taille ne verrait pas un journal
+vidé. RPO assumé : 7 jours. Procédure dans [`supabase/backup/RESTORE.md`](../../supabase/backup/RESTORE.md)
+— qui inclut **le re-pointage de `internal.call_edge`** (URL et clé du projet codées en dur : sans ça,
+les 15 crons d'un projet restauré appellent un projet mort, en silence).
+**La vérification n°5 ne regarde que les tables PERSONNELLES** — règle calculée depuis le schéma :
+référence = `sport.*` sans `user_id`/`org_id` + les 2 caches `watching` ; tout le reste est personnel.
+Ni « tout `sport.*` » (abandonne `user_favorites`, `football_watched_matches`…) ni « a un `user_id` »
+(abandonne `habit_completions`, rattaché par `habit_id`) ne suffisait seul. Validée sur les comptages
+réels du 09/09 : la fin de tournoi tennis (table plafonnée, −25 % légitime) est ignorée, un journal
+−67 % est détecté.
+**Le témoin externe** : la **règle des 60 jours** (GitHub désactive les `schedule` d'un dépôt public
+sans commit, sans run donc sans mail) est couverte par un **ping healthchecks.io** en fin des deux
+workflows — il alerte sur l'*absence* de ping, un observateur qui ne dépend pas de ce qu'il observe.
+Un secret de plus (`HEALTHCHECKS_PING_KEY`), décision owner du 2026-09-12.
+**FRAGILE, assumé** : la passphrase (deux emplacements) · les fichiers Storage (hors Postgres).
+OneDrive n'est **pas** un second emplacement : c'est un dump manuel figé, rien ne l'alimente.
 
 ---
 
@@ -166,7 +189,9 @@ Une ligne chacun, tous vérifiés par exécution. Ils alimentent la phase 3 et l
 > Règle §2 du chantier : rien n'atterrit en prose seule.
 
 **A. Les 3 jobs programmés — la même plomberie** (*« un job qui prévient que quelque chose a cassé en
-silence »*), donc **un seul workflow**, trois jobs, **un seul secret** (chaîne de connexion Postgres) :
+silence »*). *(Écrit d'abord « un seul workflow, un seul secret » ; faux à la construction : **deux
+workflows** — le watchdog toutes les 6 h, la sauvegarde hebdomadaire, deux horloges ne se mélangent
+pas — et **trois secrets** : connexion, passphrase, deploy key.)*
 
 | job | ferme | cadence |
 |---|---|---|
