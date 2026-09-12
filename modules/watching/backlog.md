@@ -174,3 +174,18 @@ l'épisode devient un objet de 2ᵉ niveau (panneau dans panneau) → pile de na
 empiler. **À juger sur un rendu, dans l'audit Watching.** Règle générale posée le même soir :
 **panneau quand il y a à lire, popover quand il n'y a qu'à régler** — le geste (cliquer l'objet)
 est la cohérence qui compte, pas le contenant.
+
+**⭐ Vision owner (12/09, soir) — LA version retenue pour l'audit, à juger sur un rendu :**
+toute saison cliquable (vue / en cours / pas commencée) → **un seul panneau**. En-tête : poster de
+saison, **statut** (depuis `series-state` : vue / en cours + position / pas commencée / en diffusion
++ prochain épisode le …) qui porte l'action *Watched through*, **année de visionnage** (⭐⭐ écrivain
+unique `season_years`, verrou « diffusée ET vue » descendu dans le panneau — *absente de la 1ʳᵉ
+formulation, ajoutée*), **note de saison via `RatingPicker`** (le primitif partagé de My Take → un
+seul contrôle /10 dans le module, le Select du popover disparaît). Épisodes en **liste verticale** :
+vignette, titre, date, synopsis avec **more/less en place** (pas de 2ᵉ panneau), **étoile best ep**.
+**Note par épisode SUPPRIMÉE** — données réelles : 648 lignes, 643 best ep, **17 notes (2,6 %)**, 12
+des 17 sont aussi best ep ; colonne `note` texte : 0 usage → les deux colonnes tombent avec la
+migration `air_date`/`overview`. Images en chargement paresseux ; saison en cours = l'épisode de
+la position visible à l'ouverture. « Set all year » reste sur la bande. **Ouvert (owner tranche sur
+rendu)** : garder ou non un rail *Best Episodes* toutes saisons sur la fiche (mon avis : garder —
+c'est la seule chose de la fiche que TMDB n'a pas).
