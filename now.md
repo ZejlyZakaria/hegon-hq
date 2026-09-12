@@ -68,6 +68,7 @@ périme) · **le « plancher d'hydratation » contenait ~290 ms d'auth** : deux 
 dans `settings/service.ts` montés sur chaque page → `getSession()` local ; **premier appel REST 819 →
 631 ms, grille 1 200 → 1 054 ms** (c'était R2, pas le bundle) · chiffres de récit corrigés (51, 10/129,
 ≤ 15 requêtes au focus, squelette ≈ 870 ms dont 380 post-hydratation).
+**✅ Doctrine de cache FERMÉE le 13/09** — commitée, six portes vertes en clone propre (lint · tsc · 296 tests · knip · ds:coverage · build).
 **▶️ Restent en phase 2** : 4 cliquets (R2 `getUser` — 22 sites restants dans les services —, R5
 `upsert`, R7 rate-limit — corriger football d'abord —, R8 `.catch(() => {})`) et les **7 écarts** de
 la doctrine §3.
