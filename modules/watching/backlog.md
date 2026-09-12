@@ -190,3 +190,16 @@ la position visible à l'ouverture. « Set all year » reste sur la bande. **Tra
 toutes saisons **RESTE sur la fiche**, avec l'UI actuelle des cartes épisode (`StillCard`) que l'owner
 juge très bonne — seule la vue *All* et son sélecteur de saison partent dans le panneau. **Statut de
 tout ce bloc : PRÉ-VALIDÉ** — la validation réelle se fait sur l'exécution, à l'écran.
+
+**Complément (12/09, soir, owner) — les deux cas que la vision oubliait, confirmés dans le code :**
+`page.tsx` l. 410 ne rend `SeasonHistoryStrip` que si `seasons.length > 1` ET (in_progress | watched |
+paused | dropped). Une série **jamais vue** et une série **à une saison** n'ont pas de bande — leurs
+épisodes passent par la section *Episodes* seule. Si elle part dans le panneau, ces deux cas perdent
+leur porte. **Décision de principe : la section change d'identité — plus « Watch History » mais
+« Seasons », l'objet, avec l'historique posé dessus quand il existe.** Les deux gardes tombent :
+(a) **jamais vue** → bande affichée, cartes poster + `S{n}` + dates, sans année/note ; panneau en
+**lecture seule** (le concept `readOnly={isUnwatched}` d'`Episodes` migre tel quel : pas d'étoile sur
+ce qu'on n'a pas vu) ; commencer la série ne fait rien apparaître, ça déverrouille ; (b) **une saison**
+→ une carte, **pas de cas particulier au départ** (les cas particuliers sont là où vivent les bugs ;
+la bande en porte déjà un, le calque des cours). Si le rendu la montre orpheline → variante « ligne
+pleine largeur », décidée sur le rendu.
