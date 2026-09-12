@@ -132,11 +132,14 @@ rien. Nuance qui change le coût : **1,3 Mo de référence** (matchs, classement
 régénérables par les crons ; **13 Mo personnels** (journal, takes, habitudes, notes) sont
 irremplaçables. *(Nuance retirée à la construction : la référence ne pèse que 10 %, l'exclure
 n'économise rien et une liste d'exclusion peut rouiller — on sauvegarde tout.)*
-→ **Cliquet : ÉCRIT le 2026-09-12, NON PROUVÉ — zéro run à ce jour.** [`backup.yml`](../../.github/workflows/backup.yml),
-hebdomadaire, vers le dépôt privé `hegon-backups`, gzip + AES-256. Passé au contre-examen le jour
-même : **rouge par construction** dans sa première version (`pg_dump` n'écrit pas de guillemets sans
-`--quote-all-identifiers` ; `[a-z_]+` excluait les 7 tables `f1_*`) — corrigé, mais **rien n'est vrai
-tant que le premier run n'est pas vert.** Il vérifie sa sortie **cinq fois** (chaque table avec son
+→ **Cliquet : ÉCRIT le 2026-09-12, RUN VERT le jour même (12/12 étapes, push et round-trip inclus) —
+pas encore « PROUVÉ »** : il le sera quand l'owner aura ouvert un fichier **à la main, à froid, avec
+la passphrase du cahier**. Un round-trip dans le runner prouve que la machine sait déchiffrer ; il ne
+prouve pas que l'humain saura, un jour de panique. [`backup.yml`](../../.github/workflows/backup.yml),
+hebdomadaire, vers le dépôt privé `hegon-backups`, gzip + AES-256. Deux contre-examens avant le premier
+run : **rouge par construction** dans sa première version (`pg_dump` n'écrit pas de guillemets sans
+`--quote-all-identifiers` ; `[a-z_]+` excluait les 7 tables `f1_*`), puis le piège `pg_wrapper` au
+premier run réel (voir §4A). Il vérifie sa sortie **cinq fois** (chaque table avec son
 nombre exact de lignes · plancher de taille et jamais < 70 % de la précédente · gzip valide ·
 **round-trip déchiffrement + recomptage avant le push** · aucune table n'a perdu > 20 % de lignes
 depuis la sauvegarde précédente) et échoue bruyamment sinon. ⚠️ **Seul le comptage protège le
@@ -193,15 +196,31 @@ silence »*). *(Écrit d'abord « un seul workflow, un seul secret » ; faux à 
 workflows** — le watchdog toutes les 6 h, la sauvegarde hebdomadaire, deux horloges ne se mélangent
 pas — et **trois secrets** : connexion, passphrase, deploy key.)*
 
-| job | ferme | cadence |
-|---|---|---|
-| **sauvegarde** des tables personnelles → dépôt privé | R11 · le seul poste irréversible | hebdomadaire |
-| **alerte cron** — lit `cron.job_run_details` + `net._http_response`, signale un échec ou un silence | R9 · la panne de 40 h | quotidienne |
-| **garde anti-dérive** — compte tables/policies/fonctions/index/**colonnes** dans la base, compare aux valeurs de référence du repo | R10 · la règle fragile | hebdomadaire |
+| job | ferme | cadence | état au 2026-09-12 |
+|---|---|---|---|
+| **sauvegarde** → dépôt privé `hegon-backups`, chiffrée, 5 auto-vérifications | R11 · le seul poste irréversible | hebdomadaire | **run vert 12/12** (12/09 17:50 UTC), push et round-trip inclus — **« prouvé » seulement quand l'owner aura ouvert un fichier à la main, à froid, avec la passphrase du cahier** |
+| **alerte cron** — `cron.job_run_details` + `net._http_response` + `internal.call_log` | R9 · la panne de 40 h | toutes les 6 h | vert depuis le 10/09 ; **première vraie alerte le 12/09** (500 de `football_sync_standings`) — elle a révélé deux défauts, corrigés le jour même (ci-dessous) |
+| **garde anti-dérive** — tables/policies/fonctions/index/**colonnes**, comparés aux valeurs de référence du repo | R10 · la règle fragile | toutes les 6 h | vert, référence semée (68 · 684 · 206 · 35 · 250 · 15) |
+
+Plus le **témoin externe** (healthchecks.io) sur les deux workflows — il alerte sur l'*absence* de run.
 
 ⚠️ **Le garde doit compter les COLONNES.** Compter tables/policies/fonctions/index ne détecte **pas**
 une colonne ajoutée à la main — or c'est précisément le geste que la règle R10 interdit. Sans la
 mesure colonne, le garde est aveugle à son propre cas d'usage.
+
+**Ce que la première vraie alerte a appris (12/09)** — deux défauts de l'alerte cron, traités en
+phase 2 parce qu'un garde qui crie au loup finit désactivé :
+1. `net._http_response` **ne garde pas l'URL** → l'alerte disait « fonction non identifiée ». Corrigé :
+   `internal.call_log`, écrit par `call_edge` à chaque appel (migration `20260912000000`), joint sur
+   `request_id`. ⚠️ La procédure de restauration re-pointe **cette** version de la fonction.
+2. Toute réponse non-2xx des 6 h alertait, même dépassée par un succès. Corrigé : seule la **dernière**
+   réponse de chaque fonction compte — l'état courant, pas l'historique.
+
+**Le piège `pg_wrapper` (12/09, premier run de la sauvegarde)** : `/usr/bin/pg_dump` sur le runner est
+l'aiguilleur Debian et route vers le cluster **16** de l'image, même après `apt install
+postgresql-client-17`. `pg_dump --version` **affichait** 16.15 et l'étape passait au vert — **afficher
+n'est pas vérifier** (R8). Le watchdog tournait en psql 16 sans le savoir depuis deux jours. Remède
+dans les deux workflows : `/usr/lib/postgresql/17/bin` en tête du `PATH` + version **exigée** par `grep`.
 
 **B. Les 5 cliquets de lint/test** nommés en R2, R3, R4, R5, R7, R8.
 

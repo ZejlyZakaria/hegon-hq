@@ -33,14 +33,16 @@ de panne dominant**, prouvé deux fois (40 h, puis 28 jours) · **Sentry ne couv
 **Livré en code** : le **watchdog** ([`.github/workflows/watchdog.yml`](../.github/workflows/watchdog.yml)) —
 alerte cron + garde anti-dérive du schéma, toutes les 6 h (la cadence est structurelle :
 `net._http_response` n'est gardé que ~6 h).
-**🟡 Sauvegarde ÉCRITE le 2026-09-12, NON PROUVÉE** → [`backup.yml`](../.github/workflows/backup.yml) :
-hebdo, chiffrée, vers `hegon-backups`, 5 auto-vérifications, échec bruyant. Contre-examen passé
-(deux contre-examens, 10 corrections, dont une qui la rendait rouge à chaque run et un faux positif
-structurel sur `tennis_matches`). **Témoin externe healthchecks.io** ajouté aux deux workflows (règle
-des 60 jours). ⚠️ **Zéro run** : l'owner doit créer le dépôt `hegon-backups`, la deploy key, le compte
-healthchecks.io, les secrets `HEGON_BACKUP_PASSPHRASE` + `HEGON_BACKUPS_DEPLOY_KEY` +
-`HEALTHCHECKS_PING_KEY`, puis lancer un `workflow_dispatch` — **le watchdog exige aussi le ping key
-désormais : il sera rouge jusqu'à sa création.** R11 passe à « prouvé » au premier vert, pas avant.
+**🟢 Sauvegarde : RUN VERT 12/12 le 2026-09-12 (17:50 UTC)**, push vers `hegon-backups` et round-trip
+inclus → [`backup.yml`](../.github/workflows/backup.yml). Hebdo, chiffrée, 5 auto-vérifications, témoin
+healthchecks.io sur les 2 workflows. Deux contre-examens avant le run, puis le **piège `pg_wrapper`**
+au premier run réel (`/usr/bin/pg_dump` routait vers PG 16 ; `--version` *affichait* 16.15 et passait
+au vert — corrigé dans les 2 workflows, version *exigée*). **R11 reste « run vert », pas « prouvé »**,
+tant que l'owner n'a pas ouvert un fichier à la main, à froid, avec la passphrase du cahier.
+**Première vraie alerte du watchdog le 12/09** (500 Gateway Timeout de `football_sync_standings`) →
+deux défauts corrigés le jour même : `internal.call_log` nomme la fonction (migration
+`20260912000000_call_log.sql`, **⚠️ à appliquer en base AVANT le prochain tick du watchdog**, sinon
+rouge sur « relation does not exist ») et la section B ne regarde plus que la *dernière* réponse.
 **▶️ Restent en phase 2** : (1) les **6 cliquets de lint/test** nommés dans la doctrine §4B ; (2) les
 **7 écarts** de la doctrine §3 ; (3) la **doctrine de cache** (constantes nommées + ESLint, et le vrai
 levier = `refetchOnWindowFocus` / `refetchOnMount`) — sa mesure A/B est prête (`scripts/measure-cache.mjs`,
