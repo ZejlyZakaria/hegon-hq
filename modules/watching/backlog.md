@@ -157,3 +157,20 @@ ta note, best ep, et **`note`** (la colonne orpheline trouve sa maison). Le pann
 construction. Règles : **supprimer le « … »** (étoile au hover = toggle en un geste, clic carte =
 panneau ; deux affordances, pas trois) · lecture d'abord, formulaire ensuite · **même Select de note**
 qu'ailleurs (cohérence ; s'il change, il change partout).
+
+**Direction plus large, discutée le 12/09 (owner : « je ne veux pas l'appliquer, je veux discuter ») —
+la SAISON devient le conteneur de ses épisodes.** Clic sur une carte de Watch History → sliding panel
+= année, note, *watched through*, **et la liste des épisodes de la saison**. La section *Episodes* et
+son sélecteur de saison disparaissent (la bande EST le sélecteur : aujourd'hui deux navigations de
+saison sur la même fiche). **Règle qui rend l'idée juste : curation sur la page, navigation dans le
+panneau** — un rail *Best Episodes* (toutes saisons, tes données) reste sur la fiche ; la vue *All*
+(catalogue TMDB) part dans le panneau ; le toggle All/Highlights disparaît. **Gain perf mesurable** :
+`useSeasonEpisodes` (TMDB via `/api/tmdb`) ne part plus au montage de la fiche, seulement à
+l'ouverture d'une saison. **Conséquence** : le verrou descend d'un cran — toute saison diffusée
+s'ouvre, seuls année/note sont verrouillés dedans ; le panneau d'une saison en diffusion = surface
+naturelle de « prochain épisode le … » (→ notification nouvelle saison). **Coût qui décide** :
+l'épisode devient un objet de 2ᵉ niveau (panneau dans panneau) → pile de navigation dans
+`sliding-panel.tsx` (saison → épisode, retour) ou dépliage en place. Vérifier si la primitive sait
+empiler. **À juger sur un rendu, dans l'audit Watching.** Règle générale posée le même soir :
+**panneau quand il y a à lire, popover quand il n'y a qu'à régler** — le geste (cliquer l'objet)
+est la cohérence qui compte, pas le contenant.
