@@ -53,6 +53,12 @@ Turbopack plante sur la longueur de chemin), puis `npm ci` et la commande.
 fichier : un horodatage, puis l'ordre de `readdirSync` (alphabétique sur NTFS, arbitraire sur ext4).
 Si tu juges un générateur, lance-le **deux fois** et compare les empreintes.
 
+**⛔ Jamais d'invite interactive sur l'écran de l'owner.** Le 2026-09-12, un test de la forme
+interactive de `gpg --decrypt` a fait surgir la fenêtre pinentry sur son poste — il ne savait pas ce que
+c'était et a annulé. Tout ce que tu exécutes doit être **non interactif** : `--batch`, `--passphrase-fd`,
+`--yes`, `< /dev/null`. Une commande qui peut demander un mot de passe, une confirmation ou ouvrir une
+fenêtre ne se lance pas ; tu la décris et tu la marques « non vérifiable ici ».
+
 **Les logs CI se lisent sans authentification** (dépôt public) :
 `curl -s "https://api.github.com/repos/ZejlyZakaria/Hegon/actions/runs?per_page=3"` puis
 `curl -s ".../actions/runs/<RUN_ID>/jobs"`. **Lis le log avant de formuler une hypothèse.**
