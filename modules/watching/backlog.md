@@ -1,5 +1,13 @@
 # Watching — Backlog
 
+> ⛔ **PREMIÈRE TÂCHE DE L'AUDIT WATCHING (phase 3), avant tout le reste — décidé le 2026-09-12 :**
+> réconcilier les 4 fichiers de ce dossier (`backlog.md`, `vnext.md`, `architecture.md`,
+> `decisions.md`) **contre le code**, ligne par ligne, par `git log` et l'arborescence — jamais par
+> lecture des `.md` entre eux. `vnext.md` a dit « V2 pas commencée » pendant 3 mois et demi après sa
+> construction, et une conversation l'a recopié comme backlog. Ce qui existe est rayé ; ce qui reste
+> porte un déclencheur ; un seul fichier vivant survit (celui-ci), les autres sont marqués historiques
+> ou fusionnés. Le statut d'une feature se prouve, il ne se lit pas.
+
 > **Chaque ligne porte son DÉCLENCHEUR.** Sans lui, un backlog devient un cimetière : on relit une
 > ligne, on ne sait plus si elle compte encore, et on la relit à la session suivante.
 
