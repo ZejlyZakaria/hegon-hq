@@ -4,13 +4,17 @@
 > démarre en lisant CE fichier, pas à froid. Il est mis à jour au fil des passes — c'est lui qui dit
 > où on en est.
 >
-> 🔴 **TROU OUVERT — SAUVEGARDE DES DONNÉES NON AUTOMATISÉE.** Chaque dump est manuel : le dernier
-> date du **2026-09-09** et vieillit dès le lendemain. La **structure** est résolue (migrations dans
-> git), les **données** ne le sont pas — et c'est **le seul poste irréversible du chantier**.
-> → à traiter à l'**axe 11** de la phase 2. **Ne pas l'oublier.**
+> 🟢 **Sauvegarde AUTOMATISÉE depuis le 2026-09-12** — `backup.yml`, hebdo, chiffrée, vers
+> `hegon-backups`, 5 auto-vérifications, témoin healthchecks.io ; **run vert 12/12**. La structure
+> (migrations) et les données sont couvertes. **R11 reste « run vert », pas « prouvé »**, tant que
+> l'owner n'a pas ouvert un fichier à la main, à froid, avec la passphrase du cahier. *(Ce bandeau
+> disait « 🔴 non automatisée » jusqu'au 13/09 — un jour de retard sur le code, corrigé.)*
 >
-> ⛔ **Gel des features pendant tout le chantier.** Sport (page stats football, tennis, F1) est
-> volontairement suspendu. On ne reprend le build qu'une fois la fondation posée.
+> ⛔ **Gel des features — PAR MODULE, jusqu'à la fin de SON audit de phase 3** *(amendement 6,
+> 2026-09-12 ; remplace « pendant tout le chantier »)*. Un module non audité est gelé. Un module
+> audité (9 axes + tests) peut recevoir des features, dans une conversation dédiée, à **trois
+> conditions** — voir Phase 3. Sport (page stats football, tennis, F1) reste gelé tant que son audit
+> n'est pas fait. **Watching sera le premier dégelé.**
 
 ---
 
@@ -136,6 +140,18 @@ la grille se fait mordre pour de vrai, la liste de corrections reste finie, et o
 ⚠️ **Attente à poser** : la passe Watching produira surtout des **règles**, pas des corrections. C'est
 normal — c'est l'étalon. Son livrable est la checklist elle-même.
 
+⭐ **LE DÉGEL PAR MODULE** *(amendement 6, décidé le 2026-09-12)*. Le gel des features couvre chaque
+module **jusqu'à la fin de son audit de phase 3** (9 axes + tests), pas jusqu'à la fin du chantier —
+sinon la passe la plus utile pour l'owner (construire) attend six phases, et le chantier redevient le
+tunnel qu'il devait éviter. Un module audité peut recevoir des features, **dans une conversation
+dédiée**, à trois conditions, toutes bloquantes :
+1. **La feature existe dans le `backlog.md` du module, avec son déclencheur** — pas d'idée du moment.
+2. **Elle respecte la doctrine de la phase 2** (`hq/rules/system-design.md`) — c'est à ça que sert
+   d'avoir audité le module d'abord.
+3. **Elle ne touche aucun module non audité.** Si elle en touche un, elle attend l'audit de ce
+   module. C'est la condition qui empêche le dégel de contaminer le gel.
+L'audit d'un module ne le rend pas seulement conforme : il le **rouvre**. Watching sera le premier.
+
 ### Phase 4 — LA VÉRITÉ DES DOCS
 
 Chaque `.md` du repo et chaque mémoire : **vivant / archivé / supprimé**. Résoudre les contradictions
@@ -240,14 +256,15 @@ Grille **identique pour tous** : c'est ce qui rend les modules commensurables. U
 |---|---|
 | 0 — La carte | ✅ **faite le 2026-09-05** → [`map.md`](map.md) · chiffres regénérables par `npm run map` |
 | 1 — Réduire le risque (purge + cliquets) | ✅ **TERMINÉE le 2026-09-09** — voir §8 |
-| 2 — System design (doctrine) | 🔵 **OUVERTE le 2026-09-09** — les 11 axes sont passés, la doctrine est écrite : [`hq/rules/system-design.md`](../rules/system-design.md). Livré en code : le **watchdog** (alerte cron + garde anti-dérive, vert depuis le 10/09) et la **sauvegarde** (`backup.yml` — **run vert 12/12 le 12/09 17:50 UTC**, push + round-trip inclus ; hebdo, chiffrée, vers `hegon-backups`, 5 auto-vérifications ; témoin healthchecks.io sur les 2 workflows ; 2 contre-examens + le piège `pg_wrapper` au 1er run ; **« prouvé » seulement après une ouverture à la main, à froid, par l'owner**). **Première vraie alerte du watchdog le 12/09** (500 `football_sync_standings`) → `internal.call_log` (migration `20260912000000`, **à appliquer**) + section B « dernière réponse seulement ». **Restent** : les 6 cliquets de lint/test, les 7 écarts de la §3 de la doctrine, et la doctrine de cache (mesure bloquée sur la session expirée). |
+| 2 — System design (doctrine) | 🔵 **OUVERTE le 2026-09-09** — les 11 axes sont passés, la doctrine est écrite : [`hq/rules/system-design.md`](../rules/system-design.md). Livré en code : le **watchdog** (alerte cron + garde anti-dérive, vert depuis le 10/09) et la **sauvegarde** (`backup.yml` — **run vert 12/12 le 12/09 17:50 UTC**, push + round-trip inclus ; hebdo, chiffrée, vers `hegon-backups`, 5 auto-vérifications ; témoin healthchecks.io sur les 2 workflows ; 2 contre-examens + le piège `pg_wrapper` au 1er run ; **« prouvé » seulement après une ouverture à la main, à froid, par l'owner**). **Première vraie alerte du watchdog le 12/09** (500 `football_sync_standings`) → `internal.call_log` (migration `20260912000000`, appliquée par `db push`, watchdog vert) + section B « dernière réponse seulement » + B-bis (requête disparue). **Doctrine de cache écrite le 12/09** (R3/R4) **et posée en code** : `src/shared/lib/stale.ts` + 2 règles ESLint (`staleTime` = palier, 126 sites migrés à comportement identique ; N+1 de service, 7 dettes annotées). Mesure A/B corrigée sur ce que l'utilisateur voit : persistance = −326 ms sur `/movies`, **non prioritaire** ; plancher = hydratation ~820 ms (levier séparé, phase 5). **Contre-examen complet passé le 13/09 (7 points, tous traités)** : règle N+1 élargie à 3 formes (8e dette : `reorderStatuses`), `STALE.DEFAULT` refusé hors `QueryProvider`, **`gcTime` aligné sur 21 sites + test**, **~290 ms d'auth retirés du chemin critique** (2 `getUser()` en série dans `settings/service.ts` → REST à 631 ms au lieu de 819), persistance rejouable par `hq/archive/query-persist.patch`, chiffres de récit corrigés. **Reste avant clôture** : commit + clone propre. Puis : 4 cliquets (R2 — ~22 sites —, R5, R7, R8), les 7 écarts de la §3. |
 | 3 — Audits par module (Watching d'abord) | ⬜ |
 | 4 — Vérité des docs | ⬜ |
 | 5 — UI/UX + design system | ⬜ |
 
-**Reprise après le chantier** (gelé, ne pas y toucher avant) : page stats football — la route n'existe
-pas. La logique manquante est le **record de prédictions** (les prédictions sont stockées mais jamais
-confrontées au résultat).
+**Reprise Sport après SON audit de phase 3** *(amendement 6 — plus « après le chantier »)* : page stats
+football — la route n'existe pas. La logique manquante est le **record de prédictions** (les
+prédictions sont stockées mais jamais confrontées au résultat). À inscrire dans
+`hq/modules/sports/backlog.md` avec son déclencheur, sinon la condition 1 du dégel la bloque.
 
 ⚠️ **`FanLog` + `BestXI`/`Legends` ne sont PLUS dans le code** — supprimés par la purge du 2026-09-07
 (voir §8). **1 395 lignes récupérables intégralement** depuis le commit **`2b0b3fb`** :

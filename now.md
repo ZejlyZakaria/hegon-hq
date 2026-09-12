@@ -14,8 +14,10 @@
 
 ## 🛑 FOCUS COURANT (2026-09-05) — CHANTIER AUDIT & FONDATION · **SPORT GELÉ**
 
-> ⛔ **Gel des features.** Ne PAS reprendre la page stats football, tennis ou F1 tant que le chantier
-> n'est pas posé. Tout ce qui suit dans ce fichier est de l'**histoire** le temps du chantier.
+> ⛔ **Gel des features — PAR MODULE** *(amendement 6, 2026-09-12)*. Un module est gelé **jusqu'à la
+> fin de son audit de phase 3** ; audité, il peut recevoir des features (conversation dédiée, feature
+> dans son `backlog.md`, conforme à la doctrine, sans toucher un module non audité). Sport reste gelé
+> tant que son audit n'est pas fait. Tout ce qui suit dans ce fichier est de l'**histoire**.
 
 **Le plan vit dans [`hq/audit/plan.md`](audit/plan.md)** — c'est LE document de pilotage, une conversation
 d'exécution démarre en le lisant. Il contient les 6 phases, la checklist system design (10 axes), la
@@ -41,13 +43,34 @@ au vert — corrigé dans les 2 workflows, version *exigée*). **R11 reste « ru
 tant que l'owner n'a pas ouvert un fichier à la main, à froid, avec la passphrase du cahier.
 **Première vraie alerte du watchdog le 12/09** (500 Gateway Timeout de `football_sync_standings`) →
 deux défauts corrigés le jour même : `internal.call_log` nomme la fonction (migration
-`20260912000000_call_log.sql`, **⚠️ à appliquer en base AVANT le prochain tick du watchdog**, sinon
-rouge sur « relation does not exist ») et la section B ne regarde plus que la *dernière* réponse.
-**▶️ Restent en phase 2** : (1) les **6 cliquets de lint/test** nommés dans la doctrine §4B ; (2) les
-**7 écarts** de la doctrine §3 ; (3) la **doctrine de cache** (constantes nommées + ESLint, et le vrai
-levier = `refetchOnWindowFocus` / `refetchOnMount`) — sa mesure A/B est prête (`scripts/measure-cache.mjs`,
-persistance derrière drapeau dans `QueryProvider`) et **bloquée sur la session expirée** :
-`node scripts/auth-setup.mjs`.
+`20260912000000_call_log.sql`, **appliquée par `npx supabase db push --linked`** — la voie normale
+depuis le repair du 09/09, l'historique est tenu) et la section B ne regarde plus que la *dernière*
+réponse. **Watchdog vert après migration.** Ajouts owner : **section B-bis** (appel dans `call_log`
+sans réponse depuis > 10 min = requête disparue, worker pg_net mort — le cas qu'aucune section ne
+voyait) · **grâce healthchecks du watchdog 1 h → 3 h** (GitHub a livré un créneau avec 74 min de
+retard ; ⚠️ à changer **à la main** dans healthchecks.io, le paramètre d'URL ne s'applique qu'à la
+création du check).
+**✅ Doctrine de cache écrite et POSÉE EN CODE le 12/09** (R3/R4 de la doctrine) :
+`src/shared/lib/stale.ts` (10 paliers) + 2 règles ESLint dans `eslint.config.mjs` — `staleTime` doit
+être un palier (126 sites migrés **à comportement identique**, 51 redéclarations du défaut supprimées,
+0 violation) et **N+1 de service** interdit (8 dettes annotées avec leur audit : 5 Goals, 1 F1, 1
+Watching, 1 Tasks). Mesure A/B refaite sur **ce que l'utilisateur voit** : grille `/movies` à 1 200 ms
+sans persistance, 874 avec → **−326 ms, non prioritaire**, retirée du code — **rejouable** par
+`git apply hq/archive/query-persist.patch`. ⚠️ Piège trouvé : en flat config, `no-restricted-syntax`
+ne fusionne pas — un bloc `src/**` effaçait le garde des coordonnées Watching ; corrigé par des
+sélecteurs partagés listés dans chaque bloc.
+**Contre-examen complet passé le 13/09 — 7 points, tous traités** : leçon esquery corrigée (`>` =
+enfant direct, sémantique normale) · règle N+1 élargie à 3 formes (boucle avec await, `.map(` sync
+qui construit une requête) → `reorderStatuses` attrapé, 8e dette · `STALE.DEFAULT` **refusé** hors
+`QueryProvider` (l'héritage est mécanique) · **`gcTime` suit le palier** : 21 sites corrigés + test
+`stale.test.ts` (un palier > 10 min sans `gcTime` ≥ est un mensonge — TanStack ramasse avant que ça
+périme) · **le « plancher d'hydratation » contenait ~290 ms d'auth** : deux `auth.getUser()` en série
+dans `settings/service.ts` montés sur chaque page → `getSession()` local ; **premier appel REST 819 →
+631 ms, grille 1 200 → 1 054 ms** (c'était R2, pas le bundle) · chiffres de récit corrigés (51, 10/129,
+≤ 15 requêtes au focus, squelette ≈ 870 ms dont 380 post-hydratation).
+**▶️ Restent en phase 2** : 4 cliquets (R2 `getUser` — 22 sites restants dans les services —, R5
+`upsert`, R7 rate-limit — corriger football d'abord —, R8 `.catch(() => {})`) et les **7 écarts** de
+la doctrine §3.
 
 **Pourquoi** : l'owner ne tient plus la codebase (« HEGON sort de ma main »). Mesuré, pas ressenti —
 CLAUDE.md porte 6 blocs « Corrected », 19 archives mentent sur leur statut, `knip` trouve ~1 400 lignes

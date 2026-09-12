@@ -50,32 +50,107 @@ C'est cohérent et c'est le bon choix pour un mono-utilisateur : le CSR évite l
 → **Cliquet : mesuré, non bloquant.** `npm run map` publie `serverPages` ; un écart se voit. **FRAGILE.**
 
 ### R2 — L'identité se lit avec `useCurrentUserId()`. `auth.getUser()` est interdit sur un chemin de lecture.
-`getUser()` est un aller-retour réseau vers Supabase Auth (~150-300 ms mesurés) ; `getClaims()` vérifie
-le JWT en process. Il reste **31 appels à `auth.getUser()`**, dont **8 dans `tasks/service.ts`** et 4
-dans `watching/service.ts` — sur des chemins de lecture.
+`getUser()` est un aller-retour réseau vers Supabase Auth (~150-300 ms mesurés) ; côté navigateur,
+`getSession()` lit le jeton **local** — et la base le vérifie de toute façon à chaque requête (RLS),
+donc « vérifier » côté client est un aller-retour pour rien. Il restait **31 appels à `auth.getUser()`**,
+dont **8 dans `tasks/service.ts`** et 4 dans `watching/service.ts` — sur des chemins de lecture.
+**Corrigé le 13/09, sur le chemin critique** : `settings/service.ts` (`requireUserId`, `getIsDemo`) et le
+helper partagé `getCurrentUserId` faisaient **deux `getUser()` en série montés sur chaque page** —
+~290 ms avant la première vraie requête, que j'avais mis sur le compte du bundle. `getSession()` →
+premier appel REST **819 → 631 ms**. Restent **~22 sites** dans les services, hors chemin critique.
 → **Cliquet : RÉEL, à poser.** Règle ESLint `no-restricted-syntax` interdisant `auth.getUser()` dans
 `src/modules/**/service.ts`, avec une liste d'exceptions nommées (flux d'auth, écritures qui doivent
-*vérifier* l'utilisateur, pas seulement le lire).
+*vérifier* l'utilisateur, pas seulement le lire) — les ~22 restants annotés comme dette, comme le N+1.
 
-### R3 — ⭐ Le cache a DEUX étages. Pas quatre.
+### R3 — ⭐ Le cache a DEUX étages. Pas quatre. Et une requête ne fait jamais attendre une liste.
 Le plan en supposait quatre. Vérifié : **`cache()` de React n'est utilisé nulle part**, et la
 revalidation Next l'est **une seule fois** — un `revalidatePath("/tasks")` qui vise une route
-**inexistante** (la vraie est `/pro/tasks`) et cliente de surcroît. Les deux étages du milieu n'existent
-pas. Il reste :
+**inexistante** (la vraie est `/pro/tasks`) et cliente de surcroît. Il reste :
 - **TanStack** (client) — fraîcheur d'une donnée que l'utilisateur vient peut-être de modifier.
-- **Une table-cache en base** (`for_you_cache`, `trending_cache`, `football_standings`,
-  `football_competition_winners`, `football_team_honours`, `tennis_players_cache`) — dès qu'un calcul
-  est cher ou qu'un quota externe est en jeu. **Un cron remplit, l'app lit. L'app n'appelle jamais un
-  fournisseur pendant un rendu.**
-→ **Cliquet : RÉEL, à poser.** Un test qui échoue si `cache(` de React ou `revalidatePath/Tag`
-réapparaît sans être ajouté à la doctrine — un troisième étage doit être une décision, pas une dérive.
+- **Une table-cache en base** (`for_you_cache`, `trending_cache`, `football_standings`…) — dès qu'un
+  calcul est cher ou qu'un quota externe est en jeu. **Un cron remplit, l'app lit. L'app n'appelle
+  jamais un fournisseur pendant un rendu.**
 
-### R4 — Le `staleTime` par défaut est de 5 minutes. Ne le redéclare pas.
-126 `staleTime` déclarés, **52 répètent exactement le défaut** de [`QueryProvider`](../../src/shared/providers/QueryProvider.tsx).
-Ce bruit cache les 74 vraies décisions (0 · 30 s · 2 min · 10 min · 30 min · 1 h · 24 h · 7 j). Une
-valeur non-défaut est une **affirmation sur la tolérance à la donnée périmée** et doit porter sa raison.
-→ **Cliquet : RÉEL, à poser.** `no-restricted-syntax` sur `staleTime: 1000 * 60 * 5` (et ses écritures
-équivalentes). Le commentaire de justification reste **FRAGILE**.
+**La cascade — mesurée le 2026-09-12 sur `/perso/watching/movies`** (`scripts/measure-cache.mjs`,
+horloge de la page, médiane sur 5) : **15 requêtes Supabase en 4 vagues séquentielles**. Trois
+mécanismes distincts, et ils ne se détectent pas pareil :
+1. **Vague 2 — dépendance réelle** : `useOwnedMediaIds` a besoin des `tmdb_id` de la vague 1. Légitime
+   ; se supprime par une jointure ou une RPC. *Conception, pas règle.*
+2. **Vague 3 — cascade de montage** : `getActiveWatchingGoals` ne dépend de rien, mais vit dans
+   `useWatchActions`, qui ne monte qu'avec les cartes. *La règle : une requête ne conditionne pas une
+   autre sans en consommer le résultat.* Non détectable statiquement — **FRAGILE, mesurée** par le
+   script en phase 3.
+3. **Vague 4 — N+1 de service** : `Promise.all(goals.map(async g => await count(...)))` — une requête
+   **par objectif**. Huit sites de cette forme (5 Goals, 2 par course F1, un appel iTunes **par
+   morceau** dans Watching, un UPDATE par statut réordonné dans Tasks — celui-ci invisible à la
+   première version de la règle, trouvé au contre-examen du 13/09).
+→ **Cliquet POSÉ le 12/09, élargi le 13/09** (`eslint.config.mjs`, `NO_N_PLUS_ONE_IN_SERVICES`) —
+**trois formes** dans `service.ts` et les routes API : `.map(async` avec un `await` (corps expression ou
+bloc) · une boucle `for`/`for…of`/`while` avec un `await` · un `.map(` **non async** dont le callback
+construit une requête (`.from(`) — la forme idiomatique avec `Promise.all`, que la première version
+laissait passer. Les 8 sites existants portent un `eslint-disable` **qui dit pourquoi et quel audit
+le corrige**. Détection, pas correction : `/movies` se répare en phase 3, axe 3.
+**Ce qui passe encore, FRAGILE** : `Array.from(xs, …)`, une chaîne `.then(…)`, et un helper qui
+encapsule la requête (`xs.map((x) => getOne(x))` — rien dans le callback ne dit « requête »). « Plus
+aucune nouvelle n'entre » serait faux ; **plus aucune sous ces trois formes** est vrai.
+→ Le 3e étage (`cache()` / `revalidatePath`) : **FRAGILE**, non gardé — un seul usage, mort.
+
+### R4 — Un `staleTime` est un PALIER, jamais un nombre. Le défaut s'hérite.
+**Avant** : 129 `useQuery`, **126 `staleTime`** dans 78 fichiers, **51 recopiaient le défaut** de 5 min,
+la même minute s'écrivait de trois façons — et le réglage global de `QueryProvider` ne gouvernait que
+**10 requêtes sur 129**. Il n'y avait pas de doctrine mal réglée : il n'y en avait **aucune**.
+**Après (2026-09-12)** : [`src/shared/lib/stale.ts`](../../src/shared/lib/stale.ts) — 10 paliers
+(`STALE.NONE` … `STALE.WEEK`), les 126 sites migrés **à comportement identique** (2 min reste 2 min),
+les 51 redéclarations du défaut **supprimées** (elles héritent), `QueryProvider` seul écrit `STALE.DEFAULT` — et
+`STALE.DEFAULT` est **refusé** partout ailleurs (`STALE_DEFAULT_IS_INHERITED`) : l'héritage est mécanique, pas discipliné.
+→ **Cliquet POSÉ** : ESLint refuse tout `staleTime:` qui n'est pas `STALE.<palier>`
+(`STALE_TIME_IS_A_TIER`). Vérifié : 0 violation, et un littéral ajouté à la main est refusé.
+
+**Un palier ne dit sa durée que si `gcTime` suit** (contre-examen du 13/09). `staleTime` = « fraîche
+pendant X » ; `gcTime` = « gardée en mémoire X **sans observateur** », 10 min par défaut. Une donnée
+`STALE.DAY` sans `gcTime` est **ramassée après 10 min hors écran**, puis refetchée : « fraîche 24 h »
+n'a jamais eu lieu. **21 sites mentaient ainsi**, dont `useTeamArtwork` commenté *« Cached a day »* avec
+10 min de gcTime, et les fiches TMDB de Watching (`DAY` avec 1 h). Corrigé : `gcTime: STALE.<le même>`
+sur les 21 — la seule modification de comportement de la migration, voulue (la donnée reste en mémoire
+le temps qu'on lui avait promis).
+→ **Cliquet POSÉ** : [`stale.test.ts`](../../src/shared/lib/stale.test.ts) — un palier > 10 min sans
+`gcTime` ≥ échoue en nommant le site. Le lint ne sait pas comparer deux propriétés ; le test lit le code.
+Pourquoi pas un `gcTime` global d'une semaine : tout resterait en mémoire une semaine dans un onglet
+longue durée ; le couple explicite ne coûte que là où on l'a voulu.
+⚠️ Ce passage est **mécanique** : les noms disent la durée, pas l'intention. **Phase 3, axe 4** décide
+requête par requête si la donnée est *la mienne* (un seul écrivain → l'invalidation suffit, le palier
+peut être long) ou *celle des robots* (palier = cadence du cron qui la remplit, **par table** — les
+classements se rafraîchissent 10×/jour en fenêtre de matchs, les compétitions une fois par mois).
+
+**Le multi-appareil n'est pas une question de durée.** Un film noté sur le téléphone n'apparaît sur
+l'onglet PC que si la requête est périmée **et** remontée : `refetchOnWindowFocus` est `false`
+globalement (surchargé `true` dans 2 fichiers sur 129) et le motif SWR `refetchOnMount: "always"`
+existe dans **1 fichier** (`useDashboardData` ; `useJournalCalendar` dit `true`, pas `"always"`). C'est là qu'est la justesse, pas dans `staleTime`. **Tranché** : on ne
+touche pas au global en phase 2 — passer `refetchOnWindowFocus` à `true` relancerait jusqu'à ~15 requêtes à
+chaque retour d'onglet (les observateurs **montés et périmés**, pas les 129 — `queryObserver.js:450`), pour un gain de justesse que seul le multi-appareil réel justifie. C'est un
+arbitrage **par module** en phase 3 (Watching : oui pour les statuts ; Journal : non). **FRAGILE.**
+
+**La persistance sur disque — possible, chiffrée, non prioritaire.** Mesurée le 2026-09-12 sur
+`/movies` : grille visible à **1 200 ms** sans, **874 ms** avec — **−326 ms (27 %)** pour 70 Ko de
+`localStorage`. Le plancher est l'**hydratation (~820 ms en local, davantage en prod)** : le cache
+n'est lu qu'après, il ne le franchit pas. Le squelette est visible **≈ 870 ms** (FCP 336 → grille 1 207) ;
+seuls ~380 ms sont postérieurs à l'hydratation, c'est cette tranche que le cache attaque. Retirée du code ;
+si un jour on la veut : `dehydrate`/`hydrate` de TanStack, hydrater **dans l'initialiseur de
+`useState`** de `QueryProvider` (avant que les enfants montent), persister sur `getQueryCache().subscribe`
+avec 1 s de debounce, en **SWR** (`refetchOnMount: "always"`) et **sélectif** (jamais `journal`/`takes`).
+**Rejouable, pas en prose** : `git apply hq/archive/query-persist.patch` remet le persister à l'identique
+(vérifié : apply → tsc → lint → `apply -R`), puis `node scripts/measure-cache.mjs /perso/watching/movies
+--runs=5 --min-posters=40`.
+
+**Le plancher d'hydratation — levier séparé, HORS phase 2 — et ce qu'il cachait.** J'avais écrit
+« ~820 ms de JS + hydratation ». Faux d'un tiers : le contre-examen du 13/09 a lu la chronologie —
+`/auth/v1/user` à 646 ms, **un second en série**, fin à 935, premier REST à 938. **~290 ms d'auth**,
+pas de bundle : `settings/service.ts` (`requireUserId`, `getIsDemo`) faisait deux `auth.getUser()`
+montés sur **chaque page**. C'était R2, corrigé le jour même (`getSession()` local — la base vérifie
+le JWT à chaque requête de toute façon) : **premier appel REST 819 → 631 ms, grille 1 200 → 1 054 ms.**
+Ce qui reste (~630 ms en local, davantage en prod) est le vrai plancher — JS + hydratation React —
+et aucun cache ne le touche. Phase 5 (bundle, code-splitting par module), avec ce chiffre comme
+référence. *Leçon : un « plancher » se décompose avant d'être déclaré incompressible.*
 
 ### R5 — Un robot écrit avec `upsert`, jamais avec `insert`.
 Un cron peut être rejoué : un `net.http_post` asynchrone ne dit pas s'il a abouti, donc **toute écriture
@@ -222,8 +297,32 @@ postgresql-client-17`. `pg_dump --version` **affichait** 16.15 et l'étape passa
 n'est pas vérifier** (R8). Le watchdog tournait en psql 16 sans le savoir depuis deux jours. Remède
 dans les deux workflows : `/usr/lib/postgresql/17/bin` en tête du `PATH` + version **exigée** par `grep`.
 
-**B. Les 5 cliquets de lint/test** nommés en R2, R3, R4, R5, R7, R8.
+**B. Les 6 cliquets de lint/test** nommés en R2, R3, R4, R5, R7, R8 :
+
+| règle | cliquet | état |
+|---|---|---|
+| R3 · N+1 de service | ESLint `NO_N_PLUS_ONE_IN_SERVICES` — 3 formes : `.map(async` avec await · boucle avec await · `.map(` sync qui construit une requête | **POSÉ 12/09, élargi 13/09** — 8 dettes annotées ; passent encore `Array.from`, `.then`, helper (FRAGILE) |
+| R4 · `staleTime` = palier | ESLint `STALE_TIME_IS_A_TIER` + `STALE_DEFAULT_IS_INHERITED` + `stale.ts` + test `stale.test.ts` (gcTime) | **POSÉ 12/09, durci 13/09** — 126 sites migrés, 21 gcTime alignés, 0 violation |
+| R2 · `auth.getUser()` hors lecture | ESLint sur `service.ts`, exceptions nommées | à poser |
+| R5 · `upsert` + `onConflict` dans les edge functions | test sur `supabase/functions/**` | à poser |
+| R7 · rate-limit sur toute route qui cite un hôte externe | test sur `src/app/api/**` (corriger football d'abord, sinon rouge jour 1) | à poser |
+| R8 · pas de `.catch(() => {})` hors exceptions | ESLint, liste d'exceptions (`localStorage`, télémétrie) | à poser |
+
+⚠️ **Composition en flat config** (trouvé en posant R3/R4) : `rules` ne fusionne pas — le dernier bloc
+qui matche un fichier **remplace** `no-restricted-syntax` en entier. Un bloc `src/**` effaçait le garde
+des coordonnées Watching en silence. Chaque bloc liste donc **tous** ses sélecteurs (constantes
+partagées en tête de `eslint.config.mjs`), du plus large au plus précis.
+**Leçon esquery, corrigée le 13/09** — j'avais écrit « un `>` en tête d'un `:has()` ne matche rien » :
+faux. `>` veut dire *enfant direct*, sémantique normale : `:has(> AwaitExpression)` matche
+`async (x) => await x` (le corps EST l'await) et ne matche pas `async (x) => { … await … }` (l'enfant
+direct est un `BlockStatement`). Écrire `Parent > Callback:has(AwaitExpression)`. **Vérifier un
+sélecteur sur les deux formes de corps avant de le poser.**
+
+Ajoutés au contre-examen du 13/09 : **`STALE_DEFAULT_IS_INHERITED`** (R4 — `STALE.DEFAULT` refusé hors
+`QueryProvider`, qui porte l'unique `eslint-disable`) et **`stale.test.ts`** (R4 — un palier > 10 min
+sans `gcTime` ≥ est un mensonge, le lint ne sait pas comparer deux propriétés, le test lit le code).
 
 **C. Restent FRAGILES, assumées** : R1 (mesurée, non bloquante), R6 pour les routes `/api/*`, la
-justification en commentaire d'un `staleTime` non-défaut, et l'exactitude de `hq/` + `memory/` (dépôt
-privé séparé, la CI publique ne peut pas les voir).
+cascade de montage (R3, mesurée par `measure-cache.mjs`, non détectable statiquement), le 3e étage de
+cache (`cache()`/`revalidatePath`, un usage mort), l'arbitrage `refetchOnWindowFocus` par module (R4),
+et l'exactitude de `hq/` + `memory/` (dépôt privé séparé, la CI publique ne peut pas les voir).

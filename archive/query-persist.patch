@@ -1,0 +1,124 @@
+Persistance du cache TanStack sur disque — EXPÉRIENCE, rejouable
+=================================================================
+
+Produit le 2026-09-13 à partir de l'expérience du 2026-09-12 (phase 2, doctrine de cache).
+Verdict : possible, chiffrée, NON prioritaire — retirée du code. Ce patch la remet à l'identique.
+
+Mesure de référence (scripts/measure-cache.mjs, /perso/watching/movies, --min-posters=40, médiane sur 5) :
+  A · sans : grille à 1 200 ms · hydratation ~820 ms · 15 requêtes en 4 vagues
+  B · avec : grille à   874 ms · 1 requête · 70 Ko sur le disque      ⇒ −326 ms (27 %)
+  (après le retrait des deux auth.getUser() du chemin critique, le 13/09 : hydratation 631 ms, grille 1 054 ms)
+
+Rejouer :
+  git apply hq/archive/query-persist.patch        # depuis la racine de l'app
+  npm run build && npm start
+  node scripts/measure-cache.mjs /perso/watching/movies --runs=5 --min-posters=40
+  git checkout src/shared/providers/QueryProvider.tsx   # et on retire
+
+Le patch ne fait NI SWR NI sélectif : c'est l'instrument de mesure, pas la version déployable.
+Base : QueryProvider.tsx tel que commité le 2026-09-13 (STALE.DEFAULT + commentaires gcTime).
+Si `git apply` refuse (fichier qui a bougé) : `git apply --3way`, ou reporter les 3 blocs à la main
+(import dehydrate/hydrate · les 3 fonctions · l'useState d'hydratation + l'useEffect de persistance).
+
+diff --git a/src/shared/providers/QueryProvider.tsx b/src/shared/providers/QueryProvider.tsx
+index 1875e50..db6922d 100644
+--- a/src/shared/providers/QueryProvider.tsx
++++ b/src/shared/providers/QueryProvider.tsx
+@@ -1,11 +1,72 @@
+ "use client";
+ 
+-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
++import { QueryClient, QueryClientProvider, dehydrate, hydrate } from "@tanstack/react-query";
+ import { useState, useEffect } from "react";
+ import type { AuthChangeEvent } from "@supabase/supabase-js";
+ import { createClient } from "@/infrastructure/supabase/client";
+ import { STALE } from "@/shared/lib/stale";
+ 
++// ─────────────────────────────────────────────────────────────────────────────
++// EXPÉRIENCE — persistance du cache sur disque
++//
++// Mesurée le 2026-09-12 sur /perso/watching/movies (grille ≥ 40 affiches, médiane sur 5) :
++// grille à 1 200 ms sans, 874 ms avec — −326 ms (27 %) pour 70 Ko de localStorage. Le plancher
++// est l'hydratation : le cache n'est lu qu'après. Verdict (doctrine R4) : possible, chiffré, NON
++// prioritaire. Retirée du code ; ce patch la remet à l'identique pour remesurer ou reconsidérer.
++//
++// ÉTEINTE par défaut : active seulement si localStorage["hegon_persist_experiment"] === "1".
++// Si un jour elle est promue : la faire en SWR (`refetchOnMount: "always"` sur les clés persistées)
++// et SÉLECTIVE (jamais `journal`/`takes` — de l'intime sur le disque). Ce patch ne fait ni l'un
++// ni l'autre : c'est l'instrument de mesure, pas la version déployable.
++// ─────────────────────────────────────────────────────────────────────────────
++const PERSIST_FLAG = "hegon_persist_experiment";
++const PERSIST_KEY = "hegon_query_cache";
++
++function persistEnabled(): boolean {
++  if (typeof window === "undefined") return false;
++  try {
++    return window.localStorage.getItem(PERSIST_FLAG) === "1";
++  } catch {
++    return false;
++  }
++}
++
++/** Recharge le cache depuis le disque AVANT le premier rendu — sinon les
++ *  composants déclenchent leurs requêtes et la persistance ne sert à rien. */
++function hydrateFromDisk(client: QueryClient) {
++  if (!persistEnabled()) return;
++  try {
++    const raw = window.localStorage.getItem(PERSIST_KEY);
++    if (raw) hydrate(client, JSON.parse(raw));
++  } catch {
++    // Cache illisible (quota, version différente) → on repart à vide, pas de crash.
++  }
++}
++
++/** Écrit le cache sur disque, au repos, sans bloquer l'interaction. */
++function persistToDisk(client: QueryClient) {
++  if (!persistEnabled()) return () => {};
++  let timer: ReturnType<typeof setTimeout> | undefined;
++  const write = () => {
++    try {
++      const snapshot = dehydrate(client, {
++        shouldDehydrateQuery: (q) => q.state.status === "success",
++      });
++      window.localStorage.setItem(PERSIST_KEY, JSON.stringify(snapshot));
++    } catch {
++      // Quota dépassé : on abandonne silencieusement, le cache mémoire suffit.
++    }
++  };
++  const unsubscribe = client.getQueryCache().subscribe(() => {
++    clearTimeout(timer);
++    timer = setTimeout(write, 1000);
++  });
++  return () => {
++    clearTimeout(timer);
++    unsubscribe();
++  };
++}
++
+ export function QueryProvider({ children }: { children: React.ReactNode }) {
+   const [queryClient] = useState(
+     () =>
+@@ -39,6 +100,16 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
+       })
+   );
+ 
++  // Hydratation SYNCHRONE, dans le corps du composant : elle doit avoir eu lieu
++  // avant que les enfants montent, sinon leurs `useQuery` partent en réseau.
++  const [hydrated] = useState(() => {
++    hydrateFromDisk(queryClient);
++    return true;
++  });
++  void hydrated;
++
++  useEffect(() => persistToDisk(queryClient), [queryClient]);
++
+   useEffect(() => {
+     const supabase = createClient();
+     const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent) => {
+@@ -54,4 +125,4 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
+       {children}
+     </QueryClientProvider>
+   );
+-}
+\ No newline at end of file
++}
