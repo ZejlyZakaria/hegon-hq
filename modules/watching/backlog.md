@@ -130,3 +130,30 @@ Dans la **bibliothèque** : un badge « TOP 10 » façon Netflix (ruban à coin 
 ### Ordre recommandé (valeur/effort)
 dismiss persistant → `is_new` sur historique → requête complète du want-to-watch (24 titres perdus
 = perte de données perçue) → priorité éditable depuis la fiche → puis le reste.
+
+---
+
+## 🎬 2026-09-12 — Best Episodes : 3 bugs (autorisés pendant le gel) + panneau (feature, gelée)
+
+**Bugs, causes lues dans le code :**
+
+1. **Le « … » reste affiché sur un best ep.** `Episodes.tsx` ~l. 268 : `highlighted ? "opacity-100" : …`
+   — choix délibéré (*« or when the best-ep star is active »*), refusé par l'owner : l'étoile dit déjà
+   tout. **Fix : supprimer la branche.**
+2. **Hover pas smooth vs `MediaCarousel`.** Dans le carrousel **toute la carte** est le `group` et scale
+   1.04 d'un bloc, marques incluses. Dans `Episodes` seul le **cadre image** scale (1.03, 300 ms) et le
+   cluster étoile + « … » est **hors du cadre**, immobile, `transition-all` 150 ms → deux horloges, un
+   bouton qui flotte. Le commentaire *« matching every other card's menu »* est faux. **Fix : cluster
+   dans le cadre qui scale + `transition-opacity duration-150 ease-out`.**
+3. **Vue Highlights sans date ni synopsis.** Elle rend depuis `episode_highlights`, qui n'a que `title` +
+   `still_path` (`types.ts` l. 94-106). **Fix : colonnes `air_date` + `overview` écrites au moment où on
+   étoile (photo du moment) + backfill des lignes existantes. Migration.**
+
+**Trouvaille :** `episode_highlights.note` existe en base et **n'est affichée nulle part**.
+
+**Feature validée en direction (owner + moi), GELÉE — déclencheur : fin du gel ou audit Watching :**
+**l'épisode devient un objet → clic = sliding panel.** Image en grand, `S4.E25 · date`, synopsis,
+ta note, best ep, et **`note`** (la colonne orpheline trouve sa maison). Le panneau règle le bug 3 par
+construction. Règles : **supprimer le « … »** (étoile au hover = toggle en un geste, clic carte =
+panneau ; deux affordances, pas trois) · lecture d'abord, formulaire ensuite · **même Select de note**
+qu'ailleurs (cohérence ; s'il change, il change partout).
