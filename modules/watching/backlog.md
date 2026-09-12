@@ -186,6 +186,7 @@ vignette, titre, date, synopsis avec **more/less en place** (pas de 2ᵉ panneau
 **Note par épisode SUPPRIMÉE** — données réelles : 648 lignes, 643 best ep, **17 notes (2,6 %)**, 12
 des 17 sont aussi best ep ; colonne `note` texte : 0 usage → les deux colonnes tombent avec la
 migration `air_date`/`overview`. Images en chargement paresseux ; saison en cours = l'épisode de
-la position visible à l'ouverture. « Set all year » reste sur la bande. **Ouvert (owner tranche sur
-rendu)** : garder ou non un rail *Best Episodes* toutes saisons sur la fiche (mon avis : garder —
-c'est la seule chose de la fiche que TMDB n'a pas).
+la position visible à l'ouverture. « Set all year » reste sur la bande. **Tranché (owner, 12/09)** : le rail *Best Episodes*
+toutes saisons **RESTE sur la fiche**, avec l'UI actuelle des cartes épisode (`StillCard`) que l'owner
+juge très bonne — seule la vue *All* et son sélecteur de saison partent dans le panneau. **Statut de
+tout ce bloc : PRÉ-VALIDÉ** — la validation réelle se fait sur l'exécution, à l'écran.
