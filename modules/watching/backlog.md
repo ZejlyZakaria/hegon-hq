@@ -203,3 +203,25 @@ ce qu'on n'a pas vu) ; commencer la série ne fait rien apparaître, ça déverr
 → une carte, **pas de cas particulier au départ** (les cas particuliers sont là où vivent les bugs ;
 la bande en porte déjà un, le calque des cours). Si le rendu la montre orpheline → variante « ligne
 pleine largeur », décidée sur le rendu.
+
+---
+
+## 👁️ 2026-09-12 — Deux bugs de perception (autorisés pendant le gel), causes lues dans le code
+
+1. **Le fondu des affiches rejoue au retour sur une page.** `shared/MediaCarousel.tsx` ~l. 125 : chaque
+   image naît à `opacity: 0` → 1 en 200 ms sur `onLoad`. Juste au premier chargement (évite le pop-in
+   désordonné) ; au retour (Movies → TV → Movies), la page se remonte, l'état repart à `false`, le
+   navigateur sert les images depuis son cache en quelques ms — et les 40 fondus rejouent. Données
+   instantanées, pixels qui font semblant de charger. **Verdict owner/moi : pas à supprimer, à rendre
+   juste — ne fondre que ce qui charge réellement.** Au montage, si `img.complete` (déjà en cache) →
+   `opacity: 1` sans transition ; sinon fondu sur `onLoad`. Même famille que le commentaire du layout
+   du 21/07 (*« the fade hid nothing »*), un étage plus bas. → **Axe 8 de l'audit Watching.**
+2. **Le Dock se remplit après le logo** (composant PARTAGÉ, pas Watching — noté ici parce que vu
+   depuis Watching). `shared/components/navigation/Dock.tsx` ~l. 167 : `navReady = userSettings !==
+   undefined && demoReady` — le Dock attend DEUX requêtes client pour peindre ses boutons, alors que
+   `(main)/layout.tsx` l. 25-31 lit déjà `profiles.is_demo` et `user_settings.hidden_modules` côté
+   serveur et rend `<Dock />` sans rien lui passer. Visible à chaque chargement complet — dont ceux que
+   Next force après un déploiement (build périmé → navigation dure au clic suivant). **Fix : le layout
+   passe `hiddenModules` + `isDemo` en props (ou hydrate les deux requêtes) → Dock complet au premier
+   pixel.** Écart §3 typique (requête client pour une donnée que le serveur avait). → **7 écarts de la
+   phase 2 s'il y figure, sinon audit des composants partagés.**
