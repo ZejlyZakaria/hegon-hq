@@ -367,13 +367,19 @@ Toutes ces stats alimentent aussi le **Year Wrapped**.
 
 ## Status & next
 
-- ✅ Brainstorm session : 2026-05-19
-- ✅ Décisions lockées
-- ✅ Section Achievements ajoutée (2026-05-20) — Year Wrapped déjà en §4
-- ✅ `reference` status noté (2026-05-23) — ajout TMDB dans listes
-- ⏭ Year Wrapped = priorité design 11/10
-- ⏭ Implémentation V2 : pas commencée
-- ⏭ Prochain brainstorm : Habits / Goals / Books / Journal / Dashboard / Sports
+> ⚠️ **Corrigé le 2026-09-12.** Cette section a dit « Implémentation V2 : pas commencée » pendant
+> **3 mois et demi** après que la V2 ait été construite — et une conversation l'a recopiée comme
+> backlog. Ce document est une **spec historique** ; l'état vivant se lit dans le code (`git log`),
+> jamais ici. Vérifié par `git log --diff-filter=A` :
+
+- ✅ **Year Wrapped** — construit (`stats/WrappedCard.tsx`, `WrappedModal.tsx`, 2026-05-30)
+- ✅ **Custom Lists** — construit (route `perso/watching/lists`, 2026-05-24)
+- ✅ **Best Episodes** — construit (`useEpisodeHighlights.ts`, `detail/Episodes.tsx`, 2026-05-24)
+- ✅ **Achievements** — construits, 12 compteurs calibrés sur la vraie biblio (cf. `backlog.md`)
+- ✅ `watched_at` — en base et dans `types.ts`
+- ❓ Slide-over quick actions, What to Watch Next — aucun fichier trouvé sous ces noms ; **statut à
+  établir dans l'audit Watching (phase 3)**, pas à deviner ici.
+- Brainstorm session : 2026-05-19 · décisions lockées · `reference` status noté (2026-05-23)
 
 ---
 
