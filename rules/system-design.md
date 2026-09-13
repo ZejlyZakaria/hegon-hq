@@ -298,7 +298,7 @@ pas — et **trois secrets** : connexion, passphrase, deploy key.)*
 
 | job | ferme | cadence | état au 2026-09-12 |
 |---|---|---|---|
-| **sauvegarde** → dépôt privé `hegon-backups`, chiffrée, 5 auto-vérifications | R11 · le seul poste irréversible | hebdomadaire | **run vert 12/12** (12/09 17:50 UTC), push et round-trip inclus — **« prouvé » seulement quand l'owner aura ouvert un fichier à la main, à froid, avec la passphrase du cahier** |
+| **sauvegarde** → dépôt privé `hegon-backups`, chiffrée, 5 auto-vérifications | R11 · le seul poste irréversible | hebdomadaire | **run vert 12/12** (12/09 17:50 UTC), push et round-trip inclus — **PROUVÉ le 2026-09-13** : ouverture manuelle par l’owner (Git Bash, pinentry, passphrase du cahier) → 17 Mo, 7 399 `INSERT` |
 | **alerte cron** — `cron.job_run_details` + `net._http_response` + `internal.call_log` | R9 · la panne de 40 h | toutes les 6 h | vert depuis le 10/09 ; **première vraie alerte le 12/09** (500 de `football_sync_standings`) — elle a révélé deux défauts, corrigés le jour même (ci-dessous) |
 | **garde anti-dérive** — tables/policies/fonctions/index/**colonnes**, comparés aux valeurs de référence du repo | R10 · la règle fragile | toutes les 6 h | vert, référence semée (68 · 684 · 206 · 35 · 250 · 15) |
 

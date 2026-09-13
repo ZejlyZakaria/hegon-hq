@@ -6,8 +6,9 @@
 >
 > 🟢 **Sauvegarde AUTOMATISÉE depuis le 2026-09-12** — `backup.yml`, hebdo, chiffrée, vers
 > `hegon-backups`, 5 auto-vérifications, témoin healthchecks.io ; **run vert 12/12**. La structure
-> (migrations) et les données sont couvertes. **R11 reste « run vert », pas « prouvé »**, tant que
-> l'owner n'a pas ouvert un fichier à la main, à froid, avec la passphrase du cahier. *(Ce bandeau
+> (migrations) et les données sont couvertes. **R11 PROUVÉE le 2026-09-13** : l’owner a ouvert
+> `2026-09-13.data.sql.gz.gpg` à la main, dans Git Bash, passphrase tapée depuis le cahier (fenêtre
+> pinentry) → 17 Mo, 7 399 `INSERT`. Première sauvegarde planifiée (dimanche 03:30) livrée le même jour. *(Ce bandeau
 > disait « 🔴 non automatisée » jusqu'au 13/09 — un jour de retard sur le code, corrigé.)*
 >
 > ⛔ **Gel des features — PAR MODULE, jusqu'à la fin de SON audit de phase 3** *(amendement 6,
@@ -256,7 +257,7 @@ Grille **identique pour tous** : c'est ce qui rend les modules commensurables. U
 |---|---|
 | 0 — La carte | ✅ **faite le 2026-09-05** → [`map.md`](map.md) · chiffres regénérables par `npm run map` |
 | 1 — Réduire le risque (purge + cliquets) | ✅ **TERMINÉE le 2026-09-09** — voir §8 |
-| 2 — System design (doctrine) | ✅ **FERMÉE le 2026-09-13.** **Mécanique** : doctrine [`system-design.md`](../rules/system-design.md) R1-R11 · watchdog (A · B **au 2ᵉ échec** · B-bis · C · dérive du schéma · témoin externe · `job_health`) · sauvegarde hebdo chiffrée + 5 vérifications · cache (paliers + ESLint + N+1 + `gcTime`) · R9 crons décalés + retry + `errMsg`. **Dette annotée, avec déclencheur** : R2 (~22 `auth.getUser()`, dont le double en série corrigé le 13/09) · R5 (`upsert` sans `onConflict`, 3 `insert` Tennis — protégés par des UNIQUE, 409 non retenté) · R8 (`.catch(() => {})` ×12) → **l'audit de chaque module ramasse les siens** ; R7 (4 routes football sans rate-limit, quota 10/min) → **audit Sport**. **Les 7 écarts §3 de la doctrine**, un par un : ① `revalidatePath("/tasks")` mort → dette, audit Tasks · ② rate-limit football → dette R7, audit Sport · ③ `enrich-team` à chaque montage → dette, audit Sport · ④ synchro compétition relancée tant que vide → dette, audit Sport · ⑤ `getUser()` : **chemin critique corrigé** (settings ×2 + helper partagé, REST 819 → 631 ms), ~22 restants → dette R2 · ⑥ `upsert`/`insert` Tennis → dette R5, audit Tennis · ⑦ `staleTime` redéclarés → **fait** (126 migrés, 51 supprimés). **R11 : run vert, ouverture manuelle par l'owner NON FAITE** — la ligne ne dira « prouvé » qu'après. Premier vrai test de R9 : 13/09 12:00 UTC. |
+| 2 — System design (doctrine) | ✅ **FERMÉE le 2026-09-13.** **Mécanique** : doctrine [`system-design.md`](../rules/system-design.md) R1-R11 · watchdog (A · B **au 2ᵉ échec** · B-bis · C · dérive du schéma · témoin externe · `job_health`) · sauvegarde hebdo chiffrée + 5 vérifications · cache (paliers + ESLint + N+1 + `gcTime`) · R9 crons décalés + retry + `errMsg`. **Dette annotée, avec déclencheur** : R2 (~22 `auth.getUser()`, dont le double en série corrigé le 13/09) · R5 (`upsert` sans `onConflict`, 3 `insert` Tennis — protégés par des UNIQUE, 409 non retenté) · R8 (`.catch(() => {})` ×12) → **l'audit de chaque module ramasse les siens** ; R7 (4 routes football sans rate-limit, quota 10/min) → **audit Sport**. **Les 7 écarts §3 de la doctrine**, un par un : ① `revalidatePath("/tasks")` mort → dette, audit Tasks · ② rate-limit football → dette R7, audit Sport · ③ `enrich-team` à chaque montage → dette, audit Sport · ④ synchro compétition relancée tant que vide → dette, audit Sport · ⑤ `getUser()` : **chemin critique corrigé** (settings ×2 + helper partagé, REST 819 → 631 ms), ~22 restants → dette R2 · ⑥ `upsert`/`insert` Tennis → dette R5, audit Tennis · ⑦ `staleTime` redéclarés → **fait** (126 migrés, 51 supprimés). **R11 : PROUVÉE le 13/09** — ouverture manuelle par l’owner, passphrase du cahier, 7 399 lignes lisibles. Premier vrai test de R9 : 13/09 12:00 UTC. |
 | 3 — Audits par module (Watching d'abord) | ▶️ **À OUVRIR — brief d'ouverture ci-dessous.** |
 | 4 — Vérité des docs | ⬜ |
 | 5 — UI/UX + design system | ⬜ |
