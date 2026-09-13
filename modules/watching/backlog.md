@@ -34,9 +34,17 @@
 > 3. **Dismiss For You persistant** + `is_new` sur historique (le système n'a aucun signal négatif).
 > 4. **Priorité want-to-watch éditable** depuis la fiche ; bandeau : n'encoder qu'un état.
 > 5. **Badge « TOP 10 »** dans la bibliothèque (grammaire des marques, 2 clusters max).
-> 6. **For You v2** — profil de goût structuré par LLM depuis takes / rewatches / highlights, moteur
+> 6. **Musée — page Awards (Oscars ↔ Emmys)** — go owner du 13/09. Ta collection rencontre le canon :
+>    frise d'années où TES titres s'allument parmi lauréats/nommés + section *Accolades* sur la fiche
+>    + timeline sur la page Person. Wikidata → TMDB par `P4947`/`P4985` (testé), table
+>    `watching.awards`, ingestion 1×, cron annuel. Mini-projet : conversation reposée, design avant code.
+> 7. **Achievements cliquables → panneau « pourquoi »** (validé 01/08) — titres contributeurs, calcul
+>    exact, date de déblocage ; `computeStats.ts` expose les items. Même pattern que le panneau saison.
+> 8. **Le fondu des affiches qui rejoue au retour** (`MediaCarousel.tsx` ~l. 125) — ne fondre que ce
+>    qui charge : `img.complete` → opacité 1 sans transition. Trois lignes, à glisser sans cérémonie.
+> 9. **For You v2** — profil de goût structuré par LLM depuis takes / rewatches / highlights, moteur
 >    déterministe sur `/discover` ; le modèle est la bouche, pas le cerveau. Chantier à cadrer avant.
-> 7. **Thèmes films/séries** — quand l'owner a un mp3 à ajouter.
+> 10. **Thèmes films/séries** — quand l'owner a un mp3 à ajouter.
 >
 > **Règles de conduite** : chaque feature = une branche de travail commitée par l'owner, six portes en
 > clone propre, capture sur les 4 devices (mobile / iPad portrait `md` / iPad paysage `lg` / desktop),
