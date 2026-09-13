@@ -8,6 +8,18 @@ Une entrée par arbitrage, la plus récente en haut.
 
 ---
 
+## 2026-09-13 — Renommer « Don't Miss » en « Trending » (spec V2 de mai, jamais fait) : on le fait ?
+
+**Choisi :** non — le libellé « Don't Miss » reste. Ligne rayée de la spec V2.
+**Pourquoi (owner) :** la section n'est pas une liste de tendances : c'est **un** titre qui porte le
+badge Trending, suivi de pépites récentes. C'est une sélection. L'appeler « Trending » mentirait sur
+son contenu — le nom actuel décrit ce qu'elle fait.
+**Dans le même arbitrage :** Books ↔ Watching et Journal ↔ Watching (les deux autres lignes de la
+V2 sans décision) sont **voulus**, mais bloqués par la condition 3 de l'amendement 6 (ils touchent
+Books et Journal, non audités) → `backlog.md` avec ce déclencheur. La notification « nouvelle
+saison / nouvel épisode » est **coupée en deux** : la détection + l'affichage côté Watching (panneau
+saison, *Waiting for*) sont Watching-only → **v4** ; la tuile dashboard attend l'audit de dashboard-os.
+
 ## 2026-07-21 — SSR sur les 3 pages grille (Movies/Series/Animes) : on bascule ou on reste en CSR ?
 
 **Choisi :** on reste en CSR (client-side, TanStack Query).

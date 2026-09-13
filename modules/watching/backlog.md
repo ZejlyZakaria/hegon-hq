@@ -9,16 +9,51 @@
 > `hq/archive/watching-v2-spec-2026-05.md`). L'état d'audit vit dans `audit-2026-09.md`.
 > Le statut d'une feature se prouve, il ne se lit pas.
 
-## ❓ Questions ouvertes de la réconciliation — spec V2 (mai) jamais construites, jamais refusées
+## 🚀 BRIEF D'OUVERTURE — « Watching v4 » (conversation dédiée, ouverte le jour où l'owner le décide)
 
-Trois lignes de la spec V2 n'ont **aucune décision enregistrée**. Ce ne sont pas des reports (pas de
-déclencheur possible) : c'est à l'owner de les trancher → `decisions.md`, construites ou refusées.
+> **Watching est audité → dégelé depuis le 2026-09-13** (`audit-2026-09.md`, amendement 6). Cette
+> conversation **construit** ; elle ne ré-audite pas. Elle lit, dans l'ordre : ce bloc → la vision du
+> panneau saison (§ « Best Episodes » + « Vision owner » ci-dessous, PRÉ-VALIDÉE, à juger sur rendu) →
+> `architecture.md` (les 7 invariants, à ne pas casser — surtout ⭐⭐ *un seul écrivain de statut*
+> et *un seul écrivain d'année*) → `decisions.md` (ne pas rouvrir). Pas `now.md`, pas les logs.
+>
+> **Les 3 conditions de l'amendement 6, toutes bloquantes** : la feature est ici avec son
+> déclencheur · elle respecte la doctrine (`system-design.md`, paliers `STALE`, R8, migrations
+> versionnées, `db push`) · **elle ne touche aucun module non audité** (Books, Journal, dashboard-os,
+> Sport… → voir les 3 lignes « inter-modules » plus bas, bloquées).
+>
+> **Ordre de construction (valeur / effort, tranché le 13/09) :**
+> 1. **Le panneau saison** — la section devient « Seasons », toute saison cliquable, un seul panneau
+>    (poster, statut + *watched through*, année, note via `RatingPicker`, épisodes en liste verticale
+>    avec more/less et étoile). Rail *Best Episodes* conservé sur la fiche. Note/ep et colonne `note`
+>    supprimées avec la migration `air_date`/`overview`. Les 3 bugs Best Episodes tombent avec lui.
+>    **+ la moitié Watching de la notification** : « prochain épisode le … » dans le panneau d'une
+>    saison en diffusion et dans *Waiting for* — détecter contre la référence, MONTRER, ne jamais
+>    réécrire le statut (invariant d).
+> 2. **Les 24 titres want-to-watch invisibles** — rail court + « See all » avec sa propre requête.
+> 3. **Dismiss For You persistant** + `is_new` sur historique (le système n'a aucun signal négatif).
+> 4. **Priorité want-to-watch éditable** depuis la fiche ; bandeau : n'encoder qu'un état.
+> 5. **Badge « TOP 10 »** dans la bibliothèque (grammaire des marques, 2 clusters max).
+> 6. **For You v2** — profil de goût structuré par LLM depuis takes / rewatches / highlights, moteur
+>    déterministe sur `/discover` ; le modèle est la bouche, pas le cerveau. Chantier à cadrer avant.
+> 7. **Thèmes films/séries** — quand l'owner a un mp3 à ajouter.
+>
+> **Règles de conduite** : chaque feature = une branche de travail commitée par l'owner, six portes en
+> clone propre, capture sur les 4 devices (mobile / iPad portrait `md` / iPad paysage `lg` / desktop),
+> `/challenge` sur le design du panneau AVANT de coder (c'est chère à défaire), et sur le rendu après.
+> Une feature qui découvre un bug hors de son périmètre → ligne ici, pas un détour.
 
-| Ligne de la spec V2 | État prouvé | La question |
+## 🔗 Inter-modules — voulus, BLOQUÉS par la condition 3 (déclencheur = audit du module partenaire)
+
+| Lien | Ce qu'il fait | Déclencheur |
 |---|---|---|
-| **Books ↔ Watching** : `media_items.based_on_book_id` + badge « Adapted into… » sur la fiche livre | 0 occurrence dans `watching/` et `books/` | Le lien vaut-il encore le coup (Books est construit depuis) — ou refusé ? |
-| **Journal ↔ Watching** : mentionner un film dans une entrée | rien | Idem — dépend de ce que Journal sait référencer. |
-| **Renommer « Don't Miss » → « Trending »** (`DontMissSectionClient.tsx:331`) | libellé toujours « Don't Miss » | Simple copie ; la spec le voulait, le code ne l'a jamais fait. Encore voulu ? |
+| **Books ↔ Watching** | `media_items.based_on_book_id` + badge « Adapted into… » sur la fiche livre (spec V2, jamais construit, 0 occurrence) | **Audit Books** fait |
+| **Journal ↔ Watching** | mentionner un film/série dans une entrée de journal (spec V2, jamais construit) | **Audit Journal** fait — et ce que Journal sait référencer |
+| **Watching → Dashboard** | tuile « nouvelle saison / nouvel épisode disponible » (la moitié dashboard de la notification ; la moitié Watching est dans v4 §1) | **Audit dashboard-os** fait |
+
+> Suggestion pour le 2ᵉ audit (« petit et jugé raté ») : **dashboard-os** débloque la tuile, **Journal**
+> débloque le lien journal — dans cet ordre, les trois liens s'ouvrent dans l'ordre où ils comptent.
+> Books (4 385 l.) est le plus gros : en dernier.
 
 > **Chaque ligne porte son DÉCLENCHEUR.** Sans lui, un backlog devient un cimetière : on relit une
 > ligne, on ne sait plus si elle compte encore, et on la relit à la session suivante.
