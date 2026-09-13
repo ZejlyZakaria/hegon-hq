@@ -77,7 +77,7 @@
 
 ---
 
-## 🐛 2026-09-12 — `series-sync` dé-vue une série terminée sur un hoquet de TMDB (Haikyu!!) — ✅ **CORRIGÉ le 13/09 dans le repo (audit, axe 3) — ⚠️ À DÉPLOYER : `supabase functions deploy watching-series-sync`**
+## 🐛 2026-09-12 — `series-sync` dé-vue une série terminée sur un hoquet de TMDB (Haikyu!!) — ✅ **CORRIGÉ le 13/09 dans le repo (audit, axe 3) — ✅ DÉPLOYÉ le 13/09 (`watching-series-sync` v11, UPDATE atomique par ligne après contre-examen)**
 
 **Symptôme** : Haikyu!! (vu intégralement, terminé en 2020, marqué vu en 2022) est réapparu dans
 *In Progress* avec sa position conservée (S4 E25). Aucun nouvel épisode. L'owner a re-cliqué
