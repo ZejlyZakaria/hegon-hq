@@ -8,7 +8,7 @@
 > **Règle d'hygiène :** quand une entrée devient de l'histoire, elle descend dans l'archive ou le log.
 > Ce fichier reste court parce qu'il est lu en entier à chaque démarrage.
 
-**Date de maj : 2026-09-05**
+**Date de maj : 2026-09-13**
 
 ---
 
@@ -26,7 +26,14 @@ checklist par module (9 axes) et le format de rapport imposé.
 **✅ Phase 0** → [`hq/audit/map.md`](audit/map.md) (`npm run map` régénère les chiffres).
 **✅ Phase 1** → purge, cliquets CI, reconstructibilité, restauration prouvée. Chronologie : [`hq/log/2026-09.md`](log/2026-09.md).
 
-**🔵 Phase 2 OUVERTE le 2026-09-09 → LA DOCTRINE : [`hq/rules/system-design.md`](rules/system-design.md).**
+**✅ Phase 2 FERMÉE le 2026-09-13** — ligne de clôture dans [`plan.md` §7](audit/plan.md) (mécanique livrée ·
+dette annotée avec déclencheur · les 7 écarts classés un par un · R11 « run vert, ouverture manuelle
+NON FAITE »). **▶️ Phase 3 à ouvrir : audit Watching — le brief d'ouverture est dans
+[`plan.md` §7 bis](audit/plan.md)**, une conversation vierge le lit en premier (§6 les 9 axes → la
+doctrine → `hq/modules/watching/backlog.md` dont la 1ʳᵉ tâche est la réconciliation des 4 md contre
+le code → rapport d'un écran → tests en dernier axe, bloquant).
+
+**🔵 Phase 2 (ouverte le 2026-09-09) → LA DOCTRINE : [`hq/rules/system-design.md`](rules/system-design.md).**
 Les 11 axes sont passés. Ce qu'elle établit, en bref : le contrat est tranché (app perso, multi-tenant
 gardé, jamais construit sans usage) · **le cache a DEUX étages, pas quatre** (`cache()` de React = 0
 usage, revalidation Next = 1 usage et il vise une route inexistante) · **l'échec silencieux est le mode

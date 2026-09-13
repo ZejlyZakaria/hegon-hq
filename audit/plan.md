@@ -256,8 +256,8 @@ Grille **identique pour tous** : c'est ce qui rend les modules commensurables. U
 |---|---|
 | 0 — La carte | ✅ **faite le 2026-09-05** → [`map.md`](map.md) · chiffres regénérables par `npm run map` |
 | 1 — Réduire le risque (purge + cliquets) | ✅ **TERMINÉE le 2026-09-09** — voir §8 |
-| 2 — System design (doctrine) | 🔵 **OUVERTE le 2026-09-09** — les 11 axes sont passés, la doctrine est écrite : [`hq/rules/system-design.md`](../rules/system-design.md). Livré en code : le **watchdog** (alerte cron + garde anti-dérive, vert depuis le 10/09) et la **sauvegarde** (`backup.yml` — **run vert 12/12 le 12/09 17:50 UTC**, push + round-trip inclus ; hebdo, chiffrée, vers `hegon-backups`, 5 auto-vérifications ; témoin healthchecks.io sur les 2 workflows ; 2 contre-examens + le piège `pg_wrapper` au 1er run ; **« prouvé » seulement après une ouverture à la main, à froid, par l'owner**). **Première vraie alerte du watchdog le 12/09** (500 `football_sync_standings`) → `internal.call_log` (migration `20260912000000`, appliquée par `db push`, watchdog vert) + section B « dernière réponse seulement » + B-bis (requête disparue). **Doctrine de cache écrite le 12/09** (R3/R4) **et posée en code** : `src/shared/lib/stale.ts` + 2 règles ESLint (`staleTime` = palier, 126 sites migrés à comportement identique ; N+1 de service, 7 dettes annotées). Mesure A/B corrigée sur ce que l'utilisateur voit : persistance = −326 ms sur `/movies`, **non prioritaire** ; plancher = hydratation ~820 ms (levier séparé, phase 5). **Contre-examen complet passé le 13/09 (7 points, tous traités)** : règle N+1 élargie à 3 formes (8e dette : `reorderStatuses`), `STALE.DEFAULT` refusé hors `QueryProvider`, **`gcTime` aligné sur 21 sites + test**, **~290 ms d'auth retirés du chemin critique** (2 `getUser()` en série dans `settings/service.ts` → REST à 631 ms au lieu de 819), persistance rejouable par `hq/archive/query-persist.patch`, chiffres de récit corrigés. **Commitée et validée en clone propre le 13/09 — six portes vertes, doctrine de cache FERMÉE.** **13/09 — panne réelle (collision de 12 crons à :00, 504 Supabase) → 4 livrables** : décalage des crons (migration), `fetchWithRetry` dans les 15 fonctions, `errMsg`, `job_health` + alerte au 2e échec ; `deno check` 13/15 (Tennis : dette TS pré-existante). ⏳ db push + deploy + 1er watchdog par l'owner. Restent en phase 2 : 4 cliquets (R2 — ~22 sites —, R5, R7, R8), les 7 écarts de la §3. |
-| 3 — Audits par module (Watching d'abord) | ⬜ |
+| 2 — System design (doctrine) | ✅ **FERMÉE le 2026-09-13.** **Mécanique** : doctrine [`system-design.md`](../rules/system-design.md) R1-R11 · watchdog (A · B **au 2ᵉ échec** · B-bis · C · dérive du schéma · témoin externe · `job_health`) · sauvegarde hebdo chiffrée + 5 vérifications · cache (paliers + ESLint + N+1 + `gcTime`) · R9 crons décalés + retry + `errMsg`. **Dette annotée, avec déclencheur** : R2 (~22 `auth.getUser()`, dont le double en série corrigé le 13/09) · R5 (`upsert` sans `onConflict`, 3 `insert` Tennis — protégés par des UNIQUE, 409 non retenté) · R8 (`.catch(() => {})` ×12) → **l'audit de chaque module ramasse les siens** ; R7 (4 routes football sans rate-limit, quota 10/min) → **audit Sport**. **Les 7 écarts §3 de la doctrine**, un par un : ① `revalidatePath("/tasks")` mort → dette, audit Tasks · ② rate-limit football → dette R7, audit Sport · ③ `enrich-team` à chaque montage → dette, audit Sport · ④ synchro compétition relancée tant que vide → dette, audit Sport · ⑤ `getUser()` : **chemin critique corrigé** (settings ×2 + helper partagé, REST 819 → 631 ms), ~22 restants → dette R2 · ⑥ `upsert`/`insert` Tennis → dette R5, audit Tennis · ⑦ `staleTime` redéclarés → **fait** (126 migrés, 51 supprimés). **R11 : run vert, ouverture manuelle par l'owner NON FAITE** — la ligne ne dira « prouvé » qu'après. Premier vrai test de R9 : 13/09 12:00 UTC. |
+| 3 — Audits par module (Watching d'abord) | ▶️ **À OUVRIR — brief d'ouverture ci-dessous.** |
 | 4 — Vérité des docs | ⬜ |
 | 5 — UI/UX + design system | ⬜ |
 
@@ -279,6 +279,60 @@ git checkout 2b0b3fb -- src/modules/sports/football/hooks/useFanLog.ts
 Le service garde `getFanLog()` et `getBestXI()` — seuls les composants sont partis. ⚠️ Ils portaient
 encore de l'`emerald` codé en dur (avant le passage au lime), donc une reprise telle quelle demandera
 de toute façon une passe couleur.
+
+---
+
+## 7 bis. BRIEF D'OUVERTURE — Phase 3, audit Watching
+
+> **Pour une conversation vierge.** Ce bloc est la première chose qu'elle lit après l'en-tête du plan.
+> Écrit le 2026-09-13 à la clôture de la phase 2. Watching est **l'étalon** : sa passe produira
+> surtout des règles ; c'est normal, son livrable est la checklist elle-même — et il sera le
+> **premier module dégelé** (amendement 6).
+
+**Lire, dans cet ordre, et rien d'autre au départ :**
+1. **§6 ci-dessus** — la checklist des 9 axes. C'est la grille, identique pour tous les modules.
+2. [`hq/rules/system-design.md`](../rules/system-design.md) — la doctrine R1-R11 : l'axe 4 (cache & état)
+   se juge contre R3/R4, l'axe 3 (couche données) contre R2/R5, l'axe 2 (dead code) contre `knip`.
+3. [`hq/modules/watching/backlog.md`](../modules/watching/backlog.md) — **sa première tâche est la
+   première tâche de l'audit** : réconcilier les 4 fichiers du dossier (`backlog`, `vnext`,
+   `architecture`, `decisions` — 1 098 lignes) **contre le code**, par `git log` et l'arborescence,
+   jamais par lecture des `.md` entre eux. `vnext.md` a menti trois mois et demi. Ce qui existe est
+   rayé ; ce qui reste porte un déclencheur ; **un seul fichier vivant survit**.
+4. La carte : [`map.md`](map.md) §1 pour la forme, `npm run map` pour les chiffres du jour.
+
+**Ne PAS lire au départ** : `hq/now.md` en entier (592 lignes, histoire), `hq/log/`, les archives.
+
+**Le format du rapport — UN ÉCRAN.** Une note par axe (9 lignes), puis les écarts, **une ligne
+chacun avec le lien fichier:ligne**. Pas de prose. S'il ne tient pas sur un écran, c'est un roman,
+pas un audit (§2). Il vit dans `hq/modules/watching/audit-2026-09.md` et remplace toute description
+d'état antérieure.
+
+**L'axe 5 — les tests — est le DERNIER et il est BLOQUANT** (amendement 2). L'audit ne se ferme pas
+tant que la logique pure de Watching n'est pas séparée de l'affichage **et testée** ; Watching a déjà
+9 fichiers de tests, la passe les complète là où l'audit trouve de la logique nue. Un module « audité »
+sans ce dernier axe n'est pas audité — et ne se dégèle pas.
+
+**Ce que la phase 2 lui laisse en entrée, déjà trouvé, à vérifier et à classer :**
+- `watching/service.ts` = 1 787 lignes, le plus gros fichier du repo (axe 1) · 4 `auth.getUser()`
+  (axe 3, R2) · 1 N+1 annoté (iTunes par morceau, axe 3, R3) · 2 hooks à `refetchOnWindowFocus`
+  `false` explicite (axe 4, R4 : arbitrage multi-appareil par module).
+- La cascade mesurée sur `/perso/watching/movies` : 15 requêtes en 4 vagues, dont **une cascade de
+  montage** (`useWatchActions` → `useWatchingGoals`) et une dépendance réelle (`useOwnedMediaIds`)
+  — axe 3, à corriger ici, pas en phase 2. Instrument : `node scripts/measure-cache.mjs /perso/watching/movies --min-posters=40`.
+- Le bug Haikyu!! (`series-sync` écrit `watched`/`in_progress` en direct, viole ⭐⭐ « un seul
+  écrivain de statut ») — axe 3, déjà diagnostiqué dans le backlog.
+- Le diagnostic du 10/09 (For You sans signal négatif, 24 titres want-to-watch invisibles,
+  `priority_level` jamais éditable) — axe 8, déjà dans le backlog.
+
+**Cette conversation n'ajoute AUCUNE feature.** Le dégel (amendement 6) prend effet à la clôture de
+son rapport, pas à son ouverture : le panneau saison et le reste du backlog attendent une **conversation
+dédiée** (« Watching v4 »), ouverte après. Une conversation qui audite et construit en même temps
+n'audite plus.
+
+**Règle de conduite** : l'audit **constate et classe**, puis **corrige ce qui tient dans la passe** ;
+ce qui ne tient pas devient une ligne de backlog **avec son déclencheur**. Chaque correction commitée
+passe les six portes en clone propre. Le contre-examen (`/challenge`) vient sur le rapport écrit,
+pas sur les intentions.
 
 ---
 
