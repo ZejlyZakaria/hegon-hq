@@ -340,7 +340,7 @@ même**.
 
 ⭐⭐ **Le différenciateur transversal (§3) et l'unique canal de distribution sont donc LA MÊME CHOSE.**
 Ce n'est pas une coïncidence, c'est la structure du produit. Base déjà présente : les stats Watching +
-le « Year Wrapped » listé en référence dans `modules/watching/vnext.md`.
+le « Year Wrapped » (construit le 2026-05-30 ; spec archivée dans `archive/watching-v2-spec-2026-05.md`).
 
 ## 11. ✅ Les issues alternatives — dont une non envisagée
 

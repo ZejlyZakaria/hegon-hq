@@ -81,7 +81,14 @@ mécanismes distincts, et ils ne se détectent pas pareil :
    autre sans en consommer le résultat.* Non détectable statiquement — **FRAGILE, mesurée** par le
    script en phase 3.
 3. **Vague 4 — N+1 de service** : `Promise.all(goals.map(async g => await count(...)))` — une requête
-   **par objectif**. Huit sites de cette forme (5 Goals, 2 par course F1, un appel iTunes **par
+   **par objectif**.
+   ⚠️ **4ᵉ forme, trouvée par l'audit Watching (13/09) : le N+1 de MONTAGE.** Un hook qui fait une
+   requête, monté dans un composant rendu **par carte** (`MediaActionMenu`, caché par opacité, pas
+   démonté) = N requêtes distinctes que TanStack ne déduplique pas (clé différente par carte).
+   `/animes` partait à **60 requêtes** là où `measure-cache.mjs` en comptait 15 — 44 `anime_cours
+   tmdb_id=eq.X`, dupliquant les 4 batches du rail. Invisible au lint et au compteur ; visible à la
+   **liste** (`scripts/list-requests.mjs`). Règle : *un composant par carte ne fetche pas ; il reçoit
+   la vue batch du rail.* FRAGILE, mesurée. Huit sites de cette forme (5 Goals, 2 par course F1, un appel iTunes **par
    morceau** dans Watching, un UPDATE par statut réordonné dans Tasks — celui-ci invisible à la
    première version de la règle, trouvé au contre-examen du 13/09).
 → **Cliquet POSÉ le 12/09, élargi le 13/09** (`eslint.config.mjs`, `NO_N_PLUS_ONE_IN_SERVICES`) —
@@ -327,11 +334,11 @@ dans les deux workflows : `/usr/lib/postgresql/17/bin` en tête du `PATH` + vers
 | règle | cliquet | état |
 |---|---|---|
 | R3 · N+1 de service | ESLint `NO_N_PLUS_ONE_IN_SERVICES` — 3 formes : `.map(async` avec await · boucle avec await · `.map(` sync qui construit une requête | **POSÉ 12/09, élargi 13/09** — 8 dettes annotées ; passent encore `Array.from`, `.then`, helper (FRAGILE) |
-| R4 · `staleTime` = palier | ESLint `STALE_TIME_IS_A_TIER` + `STALE_DEFAULT_IS_INHERITED` + `stale.ts` + test `stale.test.ts` (gcTime) | **POSÉ 12/09, durci 13/09** — 126 sites migrés, 21 gcTime alignés, 0 violation |
-| R2 · `auth.getUser()` hors lecture | ESLint sur `service.ts`, exceptions nommées | à poser |
+| R4 · `staleTime` = palier | ESLint `STALE_TIME_IS_A_TIER` (**`gcTime` aussi depuis l'audit Watching**) + `STALE_DEFAULT_IS_INHERITED` + `stale.ts` + test `stale.test.ts` (gcTime) | **POSÉ 12/09, durci 13/09, élargi le soir** — 126 sites migrés, 21 gcTime alignés, puis **10 `gcTime` bruts** trouvés par l'audit Watching (le sélecteur ne lisait que `staleTime`) → migrés, refus vérifié |
+| R2 · `auth.getUser()` hors lecture | ESLint sur `service.ts`, exceptions nommées | à poser — **Watching : 4 → 0** (audit 13/09, `getCurrentUserId()`) |
 | R5 · `upsert` + `onConflict` dans les edge functions | test sur `supabase/functions/**` | à poser |
 | R7 · rate-limit sur toute route qui cite un hôte externe | test sur `src/app/api/**` (corriger football d'abord, sinon rouge jour 1) | à poser |
-| R8 · pas de `.catch(() => {})` hors exceptions | ESLint, liste d'exceptions (`localStorage`, télémétrie) | à poser |
+| R8 · pas de `.catch(() => {})` hors exceptions | ESLint, liste d'exceptions (`localStorage`, télémétrie) | à poser — **l'ancrage existe** : `shared/utils/report-error.ts` (audit Watching, 3 avaleurs branchés) ; le lint exigera « un `catch` appelle `reportError` ou est dans la liste » |
 
 ⚠️ **Composition en flat config** (trouvé en posant R3/R4) : `rules` ne fusionne pas — le dernier bloc
 qui matche un fichier **remplace** `no-restricted-syntax` en entier. Un bloc `src/**` effaçait le garde

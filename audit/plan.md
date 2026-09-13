@@ -258,7 +258,7 @@ Grille **identique pour tous** : c'est ce qui rend les modules commensurables. U
 | 0 — La carte | ✅ **faite le 2026-09-05** → [`map.md`](map.md) · chiffres regénérables par `npm run map` |
 | 1 — Réduire le risque (purge + cliquets) | ✅ **TERMINÉE le 2026-09-09** — voir §8 |
 | 2 — System design (doctrine) | ✅ **FERMÉE le 2026-09-13.** **Mécanique** : doctrine [`system-design.md`](../rules/system-design.md) R1-R11 · watchdog (A · B **au 2ᵉ échec** · B-bis · C · dérive du schéma · témoin externe · `job_health`) · sauvegarde hebdo chiffrée + 5 vérifications · cache (paliers + ESLint + N+1 + `gcTime`) · R9 crons décalés + retry + `errMsg`. **Dette annotée, avec déclencheur** : R2 (~22 `auth.getUser()`, dont le double en série corrigé le 13/09) · R5 (`upsert` sans `onConflict`, 3 `insert` Tennis — protégés par des UNIQUE, 409 non retenté) · R8 (`.catch(() => {})` ×12) → **l'audit de chaque module ramasse les siens** ; R7 (4 routes football sans rate-limit, quota 10/min) → **audit Sport**. **Les 7 écarts §3 de la doctrine**, un par un : ① `revalidatePath("/tasks")` mort → dette, audit Tasks · ② rate-limit football → dette R7, audit Sport · ③ `enrich-team` à chaque montage → dette, audit Sport · ④ synchro compétition relancée tant que vide → dette, audit Sport · ⑤ `getUser()` : **chemin critique corrigé** (settings ×2 + helper partagé, REST 819 → 631 ms), ~22 restants → dette R2 · ⑥ `upsert`/`insert` Tennis → dette R5, audit Tennis · ⑦ `staleTime` redéclarés → **fait** (126 migrés, 51 supprimés). **R11 : PROUVÉE le 13/09** — ouverture manuelle par l’owner, passphrase du cahier, 7 399 lignes lisibles. Premier vrai test de R9 : 13/09 12:00 UTC. |
-| 3 — Audits par module (Watching d'abord) | ▶️ **À OUVRIR — brief d'ouverture ci-dessous.** |
+| 3 — Audits par module (Watching d'abord) | ▶️ **Watching AUDITÉ le 2026-09-13** → [`modules/watching/audit-2026-09.md`](../modules/watching/audit-2026-09.md) (9 axes, 8 écarts classés, tests 9 → 14 fichiers, cascade 60 → 16 req. sur `/animes`, Haikyu!! corrigé — **`supabase functions deploy watching-series-sync` à faire par l'owner**). **Watching est DÉGELÉ** (amendement 6) : « Watching v4 » peut s'ouvrir en conversation dédiée, sur le `backlog.md`. **Prochain module : à choisir — petit et jugé raté** (§4 : « pas le deuxième meilleur »), mesuré sur `map.md`, pas deviné. |
 | 4 — Vérité des docs | ⬜ |
 | 5 — UI/UX + design system | ⬜ |
 
@@ -283,7 +283,18 @@ de toute façon une passe couleur.
 
 ---
 
-## 7 bis. BRIEF D'OUVERTURE — Phase 3, audit Watching
+## 7 bis. BRIEF D'OUVERTURE — Phase 3, audit Watching — ✅ EXÉCUTÉ le 2026-09-13
+
+> ✅ **Exécuté.** Rapport : [`modules/watching/audit-2026-09.md`](../modules/watching/audit-2026-09.md).
+> Ce brief reste comme **modèle pour les 8 audits suivants** : même ordre de lecture (§6 → doctrine →
+> `backlog.md` du module → carte), même première tâche (réconcilier les `.md` du module contre le
+> code), même format de rapport (un écran), même dernier axe bloquant (les tests). Deux instruments
+> à utiliser dès le départ : `node scripts/list-requests.mjs <chemin>` (QUOI part, par vague) puis
+> `node scripts/measure-cache.mjs /<chemin>` (COMBIEN de temps) — le premier a trouvé 45 requêtes
+> que le second ne voyait pas. **Et une règle, apprise sur une régression du premier audit : sur un
+> chemin d'écriture, l'audit corrige un bug — jamais une optimisation — et le prouve en exécutant.**
+> Puis un contre-examen (`/challenge`, conversation dédiée) **avant** le commit, pas après : il a
+> trouvé 2 régressions et 5 manques dans un audit dont les 12 affirmations tenaient.
 
 > **Pour une conversation vierge.** Ce bloc est la première chose qu'elle lit après l'en-tête du plan.
 > Écrit le 2026-09-13 à la clôture de la phase 2. Watching est **l'étalon** : sa passe produira

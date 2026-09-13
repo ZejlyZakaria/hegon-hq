@@ -8,11 +8,11 @@
 > **Règle d'hygiène :** quand une entrée devient de l'histoire, elle descend dans l'archive ou le log.
 > Ce fichier reste court parce qu'il est lu en entier à chaque démarrage.
 
-**Date de maj : 2026-09-13**
+**Date de maj : 2026-09-13 (soir)**
 
 ---
 
-## 🛑 FOCUS COURANT (2026-09-05) — CHANTIER AUDIT & FONDATION · **SPORT GELÉ**
+## 🛑 FOCUS COURANT (2026-09-05) — CHANTIER AUDIT & FONDATION · **SPORT GELÉ · WATCHING DÉGELÉ**
 
 > ⛔ **Gel des features — PAR MODULE** *(amendement 6, 2026-09-12)*. Un module est gelé **jusqu'à la
 > fin de son audit de phase 3** ; audité, il peut recevoir des features (conversation dédiée, feature
@@ -26,12 +26,25 @@ checklist par module (9 axes) et le format de rapport imposé.
 **✅ Phase 0** → [`hq/audit/map.md`](audit/map.md) (`npm run map` régénère les chiffres).
 **✅ Phase 1** → purge, cliquets CI, reconstructibilité, restauration prouvée. Chronologie : [`hq/log/2026-09.md`](log/2026-09.md).
 
-**✅ Phase 2 FERMÉE le 2026-09-13** — ligne de clôture dans [`plan.md` §7](audit/plan.md) (mécanique livrée ·
-dette annotée avec déclencheur · les 7 écarts classés un par un · R11 « run vert, ouverture manuelle
-NON FAITE »). **▶️ Phase 3 à ouvrir : audit Watching — le brief d'ouverture est dans
-[`plan.md` §7 bis](audit/plan.md)**, une conversation vierge le lit en premier (§6 les 9 axes → la
-doctrine → `hq/modules/watching/backlog.md` dont la 1ʳᵉ tâche est la réconciliation des 4 md contre
-le code → rapport d'un écran → tests en dernier axe, bloquant).
+**✅ Phase 2 FERMÉE le 2026-09-13** — ligne de clôture dans [`plan.md` §7](audit/plan.md).
+
+**✅ Phase 3 · Watching AUDITÉ le 2026-09-13 (soir)** → [`hq/modules/watching/audit-2026-09.md`](modules/watching/audit-2026-09.md)
+(un écran : 9 notes, 8 écarts classés). En code, même commit : 11 exports morts supprimés · 4 `getUser()` → 0 ·
+requête inline de `/library` injectée dans le service · **cascade** : `/animes` **60 → 16 requêtes**
+(un `anime_cours` par carte — `MediaActionMenu` monté sur chaque affiche), `/movies` 15 → 11 et
+4 → 2 vagues (les objectifs lus à l'écriture) · paliers robots alignés sur leur cron · **cliquet R4
+élargi à `gcTime`** · `refetchOnWindowFocus: true` sur les statuts (multi-appareil tranché) ·
+`reportError` (R8) · iPad portrait réparé (« Sta ») · **tests 9 → 14 fichiers, 275 verts, 1 bug trouvé
+par le 1er test de `anime-overlay`** · les 4 `.md` du module réconciliés (1 098 l. → 1 fichier vivant).
+**Haikyu!! corrigé dans le repo — ⚠️ À DÉPLOYER : `supabase functions deploy watching-series-sync`.**
+Instrument neuf pour les audits suivants : `node scripts/list-requests.mjs perso/watching/animes`.
+
+**▶️ Prochaines étapes, au choix de l'owner :**
+1. **Watching v4** — conversation dédiée, sur le `backlog.md` (panneau saison pré-validé, For You
+   signal négatif, 24 want-to-watch invisibles, `priority_level`, 3 questions ouvertes de la spec V2).
+2. **2ᵉ audit de phase 3** — « petit et jugé raté », choisi sur `npm run map` : candidats par taille
+   Journal (2 715 l.) · dashboard-os (2 693 l.) · Books (4 385 l.) ; Sport (9 998 l., 0 test) est le
+   plus raté mais pas petit. Le brief §7 bis du plan sert de modèle.
 
 **🔵 Phase 2 (ouverte le 2026-09-09) → LA DOCTRINE : [`hq/rules/system-design.md`](rules/system-design.md).**
 Les 11 axes sont passés. Ce qu'elle établit, en bref : le contrat est tranché (app perso, multi-tenant
