@@ -69,6 +69,15 @@ dans `settings/service.ts` montés sur chaque page → `getSession()` local ; **
 631 ms, grille 1 200 → 1 054 ms** (c'était R2, pas le bundle) · chiffres de récit corrigés (51, 10/129,
 ≤ 15 requêtes au focus, squelette ≈ 870 ms dont 380 post-hydratation).
 **✅ Doctrine de cache FERMÉE le 13/09** — commitée, six portes vertes en clone propre (lint · tsc · 296 tests · knip · ds:coverage · build).
+**⚠️ Panne réelle trouvée par le watchdog (12-13/09)** : 504 de l'API REST *Supabase* dans `football_sync_standings`
++ `watching-series-sync` mort (erreur `[object Object]`) — 12 h sans synchro de séries. Cause probable : **12 crons
+sur 15 à la minute :00**, jusqu'à 4 fonctions la même seconde. Quatre livrables le 13/09 : migration
+`20260913000000_stagger_crons` (15 horaires distincts) · `_shared/retry.ts` (`fetchWithRetry` 1× / 2 s, injecté
+dans les 15 fonctions cron) · `errMsg(e)` partout · `internal.job_health` (migration `20260913000100`) + section B
+**au 2e échec consécutif seulement**. `deno check` vert sur 13/15 (Tennis : 6 erreurs TS pré-existantes, dette).
+**⚠️ À faire par l'owner, dans l'ordre** : `npx supabase db push --linked` (2 migrations) → commit + push →
+`npx supabase functions deploy` → un `workflow_dispatch` du watchdog → confirmer la collision dans
+Reports → Database.
 **▶️ Restent en phase 2** : 4 cliquets (R2 `getUser` — 22 sites restants dans les services —, R5
 `upsert`, R7 rate-limit — corriger football d'abord —, R8 `.catch(() => {})`) et les **7 écarts** de
 la doctrine §3.

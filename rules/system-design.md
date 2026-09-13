@@ -190,6 +190,31 @@ le SQL s'est exécuté, pas que la fonction a réussi. La vérité vit dans `net
 ~6 h.
 → **Cliquet : LE LIVRABLE EN CODE de la phase 2** (amendement 5) — l'alerte cron, §4.
 
+**Ce que la première panne RÉELLE a appris (12-13/09)** — le watchdog a trouvé une panne récurrente
+(12/09 12:00, 13/09 00:00 et 04:00) : `football_sync_standings` en 504 **de l'API REST Supabase** (pas
+de football-data — lecture d'abord fausse, corrigée en lisant le code : `fetch(${SUPABASE_URL}/rest/v1/…)`),
+et `watching-series-sync` mort sur un select `media_items` avec une erreur illisible (`String(e)` sur
+une `PostgrestError` = `[object Object]`). Plus aucune série synchronisée pendant 12 h.
+**Cause probable : la collision** — **12 crons sur 15 partaient à la minute :00** ; à 00:00 et 12:00,
+trois fonctions edge la même seconde contre une base Free ; le 1er du mois à minuit, quatre.
+Quatre règles en sont sorties, toutes en code :
+1. **Jamais deux robots la même minute.** Migration `20260913000000_stagger_crons.sql` — 15 horaires
+   distincts, cadences inchangées, :20 réservé au watchdog. Vérifié par script : aucune paire
+   (minute, heure) partagée.
+2. **Un robot réessaie une fois avant de mourir.** `supabase/functions/_shared/retry.ts` —
+   `fetchWithRetry` (2 s, sur réseau/408/5xx) injecté dans `createClient({ global: { fetch } })`
+   pour les 9 fonctions supabase-js, et à la place de `fetch(` pour les 13 appels REST bruts des 6
+   fonctions football. Sans dégât au rejeu parce que les robots écrivent en `upsert` (R5).
+3. **Une erreur se lit.** `errMsg(e)` partout où il y avait `String(e)` — la prochaine panne
+   dira son nom.
+4. **Une alerte au 2e échec consécutif, pas au premier.** `internal.job_health` (migration
+   `20260913000100`), mise à jour par `job-health.sql` à chaque passage du watchdog ; le 1er échec
+   s'imprime en information, la section B n'alerte qu'à partir de 2. Un cron à 6 h qui rate une
+   fois = 12 h de données au pire, pas une alerte.
+⚠️ **Vérifié par `deno check`** (Deno installé le 13/09 pour ça) : 13 fonctions sur 15 sans erreur ;
+les 2 de Tennis portent **6 erreurs TS pré-existantes** (`deno_dom` typé `Node`), identiques avant/après
+— le déploiement Supabase ne typechecke pas, elles tournent quand même. Dette pour l'audit Tennis.
+
 ### R10 — Tout changement de schéma passe par une migration versionnée.
 C'est l'habitude inverse qui avait produit 28 tables hors migration. Règle **FRAGILE** aujourd'hui.
 ⚠️ **`db diff --linked` ne convient pas** (testé le 06/09 : diff massif et bruité → il finirait
