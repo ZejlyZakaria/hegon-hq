@@ -48,7 +48,7 @@
 >
 > **Règles de conduite** : chaque feature = une branche de travail commitée par l'owner, six portes en
 > clone propre, capture sur les 4 devices (mobile / iPad portrait `md` / iPad paysage `lg` / desktop),
-> `/challenge` sur le design du panneau AVANT de coder (c'est chère à défaire), et sur le rendu après.
+> le panneau se construit **par itération sur des rendus réels** (décision owner 13/09 : on fait le nôtre et on le modifie au fur et à mesure ; les maquettes Gemini servent de référence, pas de spec) ; le `/challenge` vient sur le **premier rendu fonctionnel**, avant de le généraliser aux autres cas (jamais vue, une saison, cours d’anime).
 > Une feature qui découvre un bug hors de son périmètre → ligne ici, pas un détour.
 
 ## 🔗 Inter-modules — voulus, BLOQUÉS par la condition 3 (déclencheur = audit du module partenaire)
