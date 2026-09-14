@@ -222,7 +222,7 @@ Quatre règles en sont sorties, toutes en code :
 les 2 de Tennis portent **6 erreurs TS pré-existantes** (`deno_dom` typé `Node`), identiques avant/après
 — le déploiement Supabase ne typechecke pas, elles tournent quand même. Dette pour l'audit Tennis.
 
-### R10 — Tout changement de schéma passe par une migration versionnée.
+### R10 — Tout changement de schéma passe par une migration versionnée. **Et la migration met à jour `supabase/checks/expected-objects.json` dans le MÊME commit** (comptages + `_migrations_through`) — cliquet CI `scripts/check-schema-reference.mjs` depuis le 14/09, après un faux « DÉRIVE » du watchdog sur deux migrations v4 correctement versionnées mais non reportées.
 C'est l'habitude inverse qui avait produit 28 tables hors migration. Règle **FRAGILE** aujourd'hui.
 ⚠️ **`db diff --linked` ne convient pas** (testé le 06/09 : diff massif et bruité → il finirait
 désactivé). Le garde retenu est le **comptage d'objets**.
