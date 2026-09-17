@@ -64,7 +64,7 @@
 - [ ] `npm run build` passe sans erreur
 - [ ] Migration SQL versionnée dans `supabase/migrations/` *(blueprint §7.7 — fichier gardé pour la
   traçabilité, jamais rejoué par `db push`, voir [[reference_migrations_applied_by_hand]])*
-- [ ] `hq/log/{mois}.md` mis à jour (journal) + `hq/now.md` si le focus a changé
+- [ ] `hq/now.md` mis à jour si le focus a changé (le récit vit dans `git log`)
 
 ---
 
@@ -78,8 +78,8 @@
 | Sécurité & RLS | `hq/rules/security.md` |
 | Tests & CI | `hq/rules/testing.md` |
 | Modules, connexions & DB | ⚠️ pas de fichier courant — `hq/archive/modules.md` (probablement périmé) |
-| Avancement (journal) | `hq/log/` |
+| Avancement | `git log` + `hq/now.md` |
 | Invariants + décisions d'un module existant | `hq/modules/{module}/architecture.md` + `decisions.md` |
-| Brainstorm non tranché d'un module existant | `hq/modules/{module}/vnext.md` |
+| Ce qui reste sur un module existant | `hq/modules/{module}/backlog.md` (chaque ligne avec son déclencheur) |
 | Specs futures (module pas encore construit) | `hq/futur/` |
-| Historique audits | `hq/archive/` |
+| Historique audits | `hq/modules/{module}/audit-{date}.md` |

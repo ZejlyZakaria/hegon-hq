@@ -3,7 +3,7 @@
 > Ce document contient les règles fondamentales et les décisions structurantes.
 > Il pointe vers des fichiers spécialisés pour le détail.
 > Toute décision future doit être cohérente avec ce document.
-> Mis à jour : 2026-06-03
+> Mis à jour : 2026-09-17 (les §1 et §4 datés sont sortis — l'état vit dans `now.md`, la stack dans `AGENTS.md`)
 
 ---
 
@@ -12,7 +12,7 @@
 | Sujet | Fichier |
 |-------|---------|
 | **Workflow & règles de collaboration** | **`hq/rules/workflow.md`** ← lire en début de session |
-| Avancement (journal) | `hq/log/` (un fichier par mois) |
+| Avancement | `git log` (un commit = une ligne, le quoi et le pourquoi) · `hq/now.md` pour l'état |
 | Design system complet + Motion system | `hq/rules/design-system.md` + `hq/tokens.css` |
 | Architecture CSR + patterns code + DB perf | `hq/rules/performance.md` |
 | Modules + connexions + graphe + tables DB | ⚠️ pas de fichier courant — dernière version archivée `hq/archive/modules.md` (probablement périmée) |
@@ -24,33 +24,17 @@
 | Maquettes OS par module | `hq/designs/` |
 | Invariants + décisions + backlog d'un module existant | `hq/modules/{module}/{architecture,decisions,backlog,vnext}.md` |
 | Specs futures (module pas encore construit) | `hq/futur/{module}-v1.md` |
-| Historique audits + roadmap initiale | `hq/archive/` |
+| L'ordre du travail et les déclencheurs | `hq/roadmap.md` |
 
 **Avant de coder un module V1 :** lire `hq/rules/new-module.md` + la spec `hq/futur/{module}-v1.md` si elle existe.
-**Avant une prochaine version d'un module existant :** lire `hq/modules/{module}/vnext.md`.
+**Avant une prochaine version d'un module existant :** lire `hq/modules/{module}/backlog.md` (ce qui reste, avec déclencheurs) puis `decisions.md`.
 
 ---
 
-## 1. État actuel — au 2026-06-03
+## 1. État actuel
 
-**Done :**
-- Phase 0 Product Readiness · Phase 0.5 DevOps · Phase 0.75 Security Audit · Phase 1 Multi-tenancy
-- Phase 2 Core Modules : Goals V1 · Habits V1 · Journal V1 · Books V1 · ⌘K · Vitest+MSW
-- Auth complet (finalize flow, Resend, whitelist) · CSR Migration · Design system retrofit
-- Phase 2.5 Tasks Collaboration : Workspace sharing end-to-end · real-time multi-user · tags par workspace · assignees scopés · sliding panel settings · 15 fixes sécurité (commit `1c79883`)
-- Audit technique 9 sprints + Opus re-review fixes (commit `chore: apply 9-sprint audit fixes`, 2026-05-19) — score 7.5/10
-- **Validation prod 2026-05-19** : invitation workspace + édition multi-user real-time testés avec collaborateur ✅
-- Design debt audit → `hq/futur/design-debt-audit.md` (session dédiée plus tard, après sliding panels)
-
-**Modules V2 livrés :** Tasks V2 ✅ · Watching V2 ✅ (commit 2026-05-30) · **Habits V2 ✅** (2026-06-02 — montre signature, table dense, calendar, skip/pause/freeze, panel inline, achievements, Stats refait)
-**Audit cohésion inter-modules ✅** (2026-06-03) — design system unifié sur tasks/watching/habits + shared (tokens typo, `SearchInput`, hover uniforme, shadow policy, spacing 24px, tabs). Commit `feat(ui): habits v2 + design cohesion pass`. Détail : `memory/project_cohesion_audit.md`.
-
-**En cours :** Phase 3 — Real-time + Sliding Panels (≈85%). Reste : Dashboard Today real-time.
-**Brainstorming V2** : Tasks ✅ · Watching ✅ · Habits ✅ · Achievements ✅ — Goals/Books/Journal/Dashboard/Sports à brainstormer.
-
-> Détail complet dans `hq/log/` (journal, un fichier par mois)
-
----
+> L'état courant vit dans `hq/now.md` (court, réécrit à chaque jalon) ; la stack et les règles
+> opérationnelles dans `AGENTS.md` / `CLAUDE.md` à la racine. Ce fichier ne porte que la loi.
 
 ## 2. Positionnement produit
 
@@ -97,21 +81,10 @@ Elle vise le **niveau de cohérence et de sensation d'un OS** (Linear, Superhuma
 
 ---
 
-## 4. Stack — état réel 2026-04-24
+## 4. Stack
 
-**Frontend :** Next.js 15 (App Router) · React 19 · TypeScript strict · Tailwind CSS v4 · Framer Motion · Zustand+persist · TanStack Query v5 · shadcn/ui (sélectif) · Lucide Icons · Inter (--font-sans) · Geist Mono (--font-mono)
-
-**Backend :** Supabase PostgreSQL (3 schémas : public, watching, sport) · Supabase Auth (email/password + Google OAuth + finalize flow) · RLS (my_orgs() helper) · Edge Functions · Resend · Upstash Redis
-
-**Observabilité :** Sentry · Vercel Analytics · Vercel Speed Insights
-
-**Tests (setup 25/04) :** Vitest · Playwright · MSW · Husky+lint-staged
-
-**Intelligence (futur) :** Claude API (Opus 4.7 / Haiku 4.5) · pgvector (Phase 5)
-
-**Explicitement exclu :** Redux/MobX · Zod runtime global · tRPC · CSS-in-JS · Service Worker custom · Storybook · Docker local
-
----
+> Voir `AGENTS.md` §Stack (la vérité au jour le jour). Explicitement exclu, et ça ne bouge pas :
+> Redux/MobX · Zod runtime global · tRPC · CSS-in-JS · Service Worker custom.
 
 ## 5. Les 10 signaux "OS feel"
 

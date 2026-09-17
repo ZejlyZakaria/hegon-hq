@@ -312,7 +312,7 @@ de toute façon une passe couleur.
    rayé ; ce qui reste porte un déclencheur ; **un seul fichier vivant survit**.
 4. La carte : [`map.md`](map.md) §1 pour la forme, `npm run map` pour les chiffres du jour.
 
-**Ne PAS lire au départ** : `hq/now.md` en entier (592 lignes, histoire), `hq/log/`, les archives.
+**Ne PAS lire au départ** : rien d'autre — `hq/now.md` est court depuis le 17/09 ; il n'y a plus de journal ni d'archives (le récit vit dans `git log`).
 
 **Le format du rapport — UN ÉCRAN.** Une note par axe (9 lignes), puis les écarts, **une ligne
 chacun avec le lien fichier:ligne**. Pas de prose. S'il ne tient pas sur un écran, c'est un roman,
@@ -350,7 +350,7 @@ pas sur les intentions.
 
 ## 8. Décisions vivantes issues de la phase 1
 
-> 📖 **La chronologie complète de la phase 1 est dans [`hq/log/2026-09.md`](../log/2026-09.md)** — ce
+> 📖 **La chronologie complète de la phase 1 vivait dans `hq/log/2026-09.md`, supprimé le 17/09 (le récit est dans `git log` de `hq/`)** — ce
 > qui a été fait, dans quel ordre, et les pièges rencontrés. Ne restent ici que les décisions qui
 > **gouvernent encore** le travail à venir.
 

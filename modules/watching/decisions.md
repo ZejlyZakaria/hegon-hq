@@ -8,6 +8,153 @@ Une entrée par arbitrage, la plus récente en haut.
 
 ---
 
+## 2026-09-15 (soir) — Le Musée, deuxième passe sur rendu : cinq arbitrages owner + la source Emmy
+
+**1. Portrait pour les catégories à lauréat unique** (acting, direction — 16 catégories, colonne
+`award_categories.portrait`). Le prix est celui de la personne ; la fiche person existe. Visage,
+nom, le film en ligne méta (lien séparé vers la fiche), **l'état reste celui du film** (c'est ce
+que la bibliothèque connaît). Pas pour scénario/son/musique (2-4 noms → un portrait mentirait).
+**Refusé (moi, dans le brief) :** « pas de visages » — mon argument valait pour les notes sous un
+visage, pas pour le visage.
+
+**2. Le tag d'année est horizontal, accroché au bord gauche, et porte l'état.** Le ruban vertical
+« ne se lisait pas » à la taille d'une affiche. Tokens `--color-award` (or métallique, **vu**) et
+`--color-award-dim` (gris foncé, **pas vu**) dans `globals.css` — pas l'ambre (`--color-gold`
+= la priorité *medium* du watchlist). Centré sur la rangée du cluster (top-2, h-6) → aligné avec
+le cœur et le « … » par construction. **Refusé :** masque noir & blanc sur les affiches (construit,
+vu, retiré : « tous les posters identiques, l'info sur le badge ») ; masque sur les cartes de la page
+Awards (la carte reste en couleur, le masque est l'affaire de la page catégorie).
+
+**3. Sous l'affiche : titre, puis le mot de la bibliothèque** dans le vocabulaire de la vue liste
+de `ListDetail` (point + Watched / In Progress / Want to Watch / Paused / Dropped / Unwatched,
+`canonStatus`), ta note à droite, rangée à hauteur fixe (16 px). Filtre All · Watched · Want ·
+Unwatched à côté de Winners · Nominees. **Caught up = vu** (`isSeen` : watched OU
+`seriesState === "caught-up"`) — Widow's Bay a une saison complète, la performance primée est vue.
+
+**4. L'étagère ouvre la page** : plus d'en-tête Museum/Awards ; Oscars | Emmys dans l'en-tête du
+rail (`MediaCarousel.actions`), See all → `TrophyShelfPanel`. L'année de sortie disparaît de la
+ligne (un « 2025 » sous un tag « 2026 » — cérémonie ≠ sortie — se lisait comme une contradiction).
+**La cérémonie vit dans l'URL** (`?c=emmys`) : le Back du navigateur revient aux Emmys.
+
+**5. Les Emmys viennent d'emmys.com, pas de Wikidata.** Mesuré : Wikidata a 98/98 Best Picture
+mais 19 Comedy Series sur 70 ans et zéro award pour Ted Lasso — jamais saisi, trois chemins de
+requête testés. emmys.com publie sur chaque page de catégorie un JSON-LD schema.org `ItemList`
+(séries, personnes, lauréat/nommé, depuis 1949 ; robots.txt permissif, pas de clause anti-
+extraction trouvée) — mais **aucun id**. D'où une RÉSOLUTION qui dit sa confiance (`match`) :
+TMDB search + fenêtre d'année → `name` ; Wikipedia → Wikidata → id TMDB, qui prime → `id` ;
+rien → `none`, ligne gardée sans lien (`work_tmdb_id` nullable). Exception argumentée à « jamais
+par titre » : il n'y a pas d'id, la source est officielle et complète. Deux pièges attrapés à sec :
+les homonymes Wikipedia (Scoop 2006 vs 2024, Mr. & Mrs. Smith 1996 vs 2024 → l'année entre
+parenthèses la plus récente sous l'année de cérémonie) et les suffixes d'anthologie (« Anna
+Karenina Masterpiece Theatre »). Sondé : 2024 = 32/32 résolus, 1978 = 20/20.
+**Refusé :** IMDb (pas d'awards dans les datasets, scraping interdit), Kaggle (2019, par titre),
+Wikipedia-tables (complet et jointable par id, plan B honnête, mais emmys.com est officiel et déjà
+structuré).
+
+## 2026-09-16 — Le Musée : la saison primée, « This year », les crons en saison, la vue par année
+
+**1. La saison primée (Emmys).** Ce que le canon dit, c'est « Succession **S4** a gagné en 2024 ».
+emmys.com ne la donne pas ; la règle d'éligibilité (1ᵉʳ juin → 31 mai) + les saisons TMDB la
+déduisent (`season_number`, `season_poster_path`). À l'écran : l'affiche de la saison et la puce
+« S4 » de la bande Seasons, jamais sur un portrait. Limite : deux saisons dans la fenêtre → la
+plus récente.
+
+**2. « This year » = la page cérémonie en mode « avant ».** Une seule page
+(`/awards/ceremony/{c}/{year}`), deux moments : avant la cérémonie, les nommés par catégorie, le
+compte à rebours, ce que tu as vu ; après, le lauréat en tête avec le tag. La bannière en tête de la
+page Awards **est pilotée par la donnée** — elle existe dès que des nommés existent pour une
+cérémonie à date future, disparaît le lendemain — pas par une date de nominations à saisir. Les
+dates viennent de Wikidata (`award_ceremonies`, P179 « part of the series », **pas** le P31 qui est
+une classe générique de 400 prix). Un Emmy tenu en janvier (grève 2024) = l'année précédente.
+**Le tag d'année est la porte de cette page.** Validé sur simulation (date poussée en base, remise).
+**Refusé :** regrouper les victoires consécutives d'une série en une tuile — construit, vu, refusé :
+« cinq affiches identiques montrent la domination au premier regard, c'est une publicité pour la
+série ».
+
+**3. Crons en saison, 2×/jour** (03:25/15:25 Oscars janvier→mars, 03:55/15:55 Emmys
+juillet→septembre), mensuels hors saison — exigence « dans HEGON sous 12 h ». Créneaux vérifiés
+contre les 17 crons : les premiers (04:55/05:55) tombaient dans la traîne de for-you (04:50).
+
+**4. Résolution par nom, les règles apprises sur la donnée réelle :** titre exact, puis **le plus
+proche de l'année de cérémonie**, puis popularité (la popularité prenait l'homonyme célèbre : la
+série *Sherlock Holmes* de 2013 pour *Sherlock*, la série de 1967 pour le film de 1979) ; l'autre
+type TMDB quand le type attendu n'offre qu'une autre époque ; parapluies (35 noms), « Vol. N »,
+studio devant, possessif d'auteur en dernier recours seulement (« Schitt's Creek » est un titre) ;
+un épisode primé seul → sa série, les deux côtés du « : », Wikidata tranche ; page Wikipedia = titre
+exact sans qualificatif. Une table d'alias pour les retitrages US (« Before the Dinosaurs » =
+*Walking with Monsters*). Une source `manual` pour les trous de la source (Ngor 1985).
+
+**📌 Dashboard (owner, 16/09) :** ce genre d'information — « les Oscars sont dans 23 jours, il te
+reste 38 nommés à voir » — doit aussi remonter **sur le dashboard comme une notification**, au même
+titre que « nouvelle saison disponible » (backlog §11 / tableau Watching → Dashboard). Même
+condition : la moitié Watching existe (la bannière), la moitié dashboard attend l'audit dashboard-os.
+
+## 2026-09-15 — Le Musée / Awards : le design figé (owner), après deux maquettes et un brief
+
+**Chemin :** ma première vision (frise d'années scrubbable, héros, anneaux teal) → image Gemini →
+jugée *almanach* ; brief neutre (`awards-brief.md`) donné à une IA tierce → sa maquette (compteurs →
+étagère → catégories) → challengée ; fusion validée par l'owner avec **un** changement de son cru.
+
+**Choisi — la page `/perso/watching/awards`, de haut en bas :**
+1. **En-tête** : sur-titre « Museum », « Awards », « Your collection meets the canon », segmented
+   **Oscars | Emmys**. **Pas de héros**, pas de statuette (stock + marque déposée de l'Academy).
+2. **Your trophy shelf** — rail (`MediaCarousel`) de TES titres lauréats, ruban **or** portant
+   **l'année** (le ruban Top 10 dans sa lecture « un chiffre », en or = le monde), ta note, sous
+   l'affiche la catégorie la plus prestigieuse (+N si plusieurs). « See all ».
+3. **Categories** — **une grille de cartes sur le modèle des Lists** (owner) : mosaïque des 3
+   derniers lauréats (les tiens en couleur, les autres atténués), flag or, « 12 / 96 watched » +
+   barre teal, clic → **page catégorie = la grille de `ListDetail`** (ruban année, tes notes, « + »
+   sur ce que tu n'as pas). *Pourquoi la carte des Lists :* même forme = même comportement — une
+   catégorie EST une liste, écrite par le monde (or) et non par toi (teal). 23 cartes = un écran ;
+   23 rails = une page interminable.
+4. **L'année est une porte, pas une colonne** : cliquer un ruban « 2025 » → la cérémonie (lauréat
+   large + nommés, accordéon Don't Miss). Les nommés n'ont de sens QUE là.
+**Refusé :** la rangée de compteurs sous l'en-tête (les cartes disent déjà « 12 / 96 » ; les
+compteurs restent des achievements dans Stats) · onglets Overview/Oscars/Emmys (un filtre déguisé)
+· tuiles de catégorie en photos de stock (dans Watching la seule image est l'artwork) · visages pour
+les catégories « personne » (**l'objet est toujours le film**, la personne est une ligne méta) · ruban
+« WINNER » sur une étagère qui ne contient que des lauréats.
+**Données :** Wikidata → `watching.awards` (référence globale, sans `org_id`), join TMDB par
+`P4947`/`P4983`/`P4985`, ingestion par edge function + cron annuel, jamais de SPARQL depuis la page.
+**Ordre de construction :** donnée d'abord (l'UI ne se juge que sur 96 vraies affiches), puis page,
+puis carte/grille catégorie, puis cérémonie, puis Accolades (fiche) et timeline (person).
+
+## 2026-09-14 — Le panneau saison : trois arbitrages pris sur le rendu (owner), qui dévient de la vision du 12/09
+
+**1. La note de saison = dix étoiles à demi-pas (`StarRating`), PAS le `RatingPicker`.**
+**Choisi :** un second contrôle /10 dans le module, réservé au rang « saison ».
+**Pourquoi (owner, sur rendu) :** la barre avec ses mots (*Skip it → Masterpiece*) est une cérémonie
+— juste pour LE verdict d'un titre, donnée une fois dans My Take. Répétée par saison dans un panneau,
+elle pèse. Les étoiles disent le chiffre d'un coup d'œil et le prennent en un tap. **Une seule
+échelle** (/10 par 0,5), **deux présentations selon le rang** ; un seul écrivain (`view.writeRating`),
+inchangé. Teal, jamais or (grammaire des marques : l'or est celui du monde et du best-ep).
+**Refusé :** le `RatingPicker` dans le panneau (vision du 12/09 « un seul contrôle /10 ») — vu à l'écran,
+jugé trop lourd ; le Select de l'ancien popover.
+
+**2. Pas d'auto-scroll vers la position à l'ouverture.**
+**Choisi :** le panneau s'ouvre en haut (carte de saison visible) ; « Up next » + l'atténuation des
+épisodes devant toi disent où tu es. **Refusé :** la vision du 12/09 « saison en cours = l'épisode de la
+position visible à l'ouverture » — construit, vu, retiré par l'owner.
+
+**3. Une saison = une note.** Un titre à UNE saison d'affichage n'a pas de note de saison : la note de
+My Take EST celle de la saison (`ScoreMark` lecture seule dans le panneau, `user_rating` sur la carte
+de la bande ; `season_ratings["1"]` n'est plus écrit). Vérifié : 0 titre à une saison ne porte de
+`season_ratings`/`cour_ratings` en base. **Conséquence assumée :** quand une telle série gagne une
+2ᵉ saison, la carte S1 perd sa note jusqu'à ce que l'owner la note explicitement — c'est un nouveau
+jugement (le titre n'est plus sa saison), pas une perte.
+
+**Dans le même arbitrage (forme, owner) :** la carte de saison est construite **comme la carte
+Trending** (poster à fleur du bord gauche, 112 px fixes, son artwork flouté `w92` saturé en halo) ;
+pas de titre de cour (une seule forme de carte pour tous les panneaux) ; les corrections (« I stopped
+after this season ») vivent derrière un « … » en haut à droite ; *Next episode* = bandeau deux lignes
+sous la carte, jamais une carte dans la liste ; « …more » sur la 2ᵉ ligne du synopsis, mesuré, pas
+deviné ; vignettes `w500` (panneau ET rail Best Episodes) ; le rail n'existe pas sans best ep.
+
+**Ce qui la rouvrirait :** un 2ᵉ usage d'un contrôle de note hors My Take (→ le `StarRating`
+deviendrait le contrôle « secondaire » partout, ou on retombe à un seul).
+
+---
+
 ## 2026-09-13 — Renommer « Don't Miss » en « Trending » (spec V2 de mai, jamais fait) : on le fait ?
 
 **Choisi :** non — le libellé « Don't Miss » reste. Ligne rayée de la spec V2.
