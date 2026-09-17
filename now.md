@@ -21,7 +21,10 @@ Crew paginé, Library › People avec rails de 20 et panneaux paginés par 50 en
 `watching-people-sync` hebdo + à chaud), **§12 le « + »** d'ajout direct, la grammaire des affiches
 (bookmark à 5 états, cercles de statut, cœur à gauche, « + » à droite). Bloc « autonomie » du 17/09 :
 les robots répondent 500 quand tout échoue, fraîcheur awards / people dans le watchdog, R7 sur tous
-les appels tiers, titres pas encore sortis rafraîchis chaque semaine, Dock peint côté serveur.
+les appels tiers, titres pas encore sortis rafraîchis chaque semaine, Dock peint côté serveur,
+squelettes homogènes (un `Pulse`, cellules de rail partagées `RAIL_CELLS`, plus de doublon More Like
+This). Deux irrégularités de chargement (`library` / `movies`, notées le 22/07) restent **non
+mesurées en prod** — en dev la compilation masque tout ; à mesurer sur hegon.fr avant de toucher.
 
 **Reste (avec déclencheurs) → `modules/watching/backlog.md`** : §9 For You v2 (à cadrer), §10
 thèmes (attend un mp3), Universes (non tranché), dettes mesurées.
