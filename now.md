@@ -36,7 +36,18 @@ Watching : `series-sync` 4 h · `anime-cours` 6 h · `trending` quotidien · `fo
 sortis). Un robot mort se voit dans `Watchdog` (GitHub Actions) et sur healthchecks.io — pas
 besoin d'ouvrir l'app. Clés : `AGENTS.md` §Keys.
 
+## 📏 Mesuré le 17/09 (dev, 2ᵉ chargement, octets réels)
+
+Hubs 51-92 KB · Library 0 KB (semée serveur) · Lists 25 KB · Stats 399 KB (a besoin de tout) ·
+People **102 KB** (index lean) · **Awards 980 KB** — le poids est le canon (`award_entries` 730 KB
+pour 20 cartes), levier = requête dédiée, chiffré dans `modules/watching/backlog.md`.
+
 ## ▶️ PROCHAINE SESSION
+
+0. **Squelette de la fiche** (`DetailSkeleton`) : l'owner le voit « hero vide, My Take et Details
+   saturés, Top 10 / In list / Accolades absents » — impossible à capturer ici (la ligne arrive
+   avant l'interception). **Partir de SA capture** au reload d'une fiche (film + série), puis
+   corriger en une passe. Ensuite, si voulu, la requête dédiée d'Awards (~1 h).
 
 1. Lire `AGENTS.md` (Codex) ou `CLAUDE.md` (Claude) → ce fichier → `hq/roadmap.md`.
 2. **2ᵉ audit de phase 3 : dashboard-os** (brief `audit/plan.md` §7 bis). Ne pas construire de
