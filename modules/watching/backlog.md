@@ -24,11 +24,11 @@
 
 ## 🧾 Dettes mesurées, pas urgentes (déclencheur = la page paraît lente)
 
-- **Page Awards** : **1 128 KB** mesurés le 17/09 (`award_entries` 426 KB + `media_items` 379 KB via
-  `getOwnedTitles`, 30 colonnes × 900 lignes pour une étagère de 64 titres). Levier n°1 (30 min,
-  ÷2) : l'index lean `getOwnedStatus` (7 colonnes, déjà utilisé par People : 379 → 80 KB) + les
-  lignes complètes des seuls titres de l'étagère. Levier n°2 : une requête dédiée à ce que la page
-  affiche (dernier lauréat par catégorie + couverture), pas le repli.
+- **Page Awards** : **980 KB** mesurés le 17/09 après l'index lean (`getOwnedTitles` 19 colonnes
+  + l'étagère par ids : 377 → 230 KB). Ce qui reste, c'est le CANON : `award_entries` lauréats =
+  **730 KB en 2 pages** (1 728 entrées) pour 20 cartes et des compteurs. Levier suivant = une
+  requête dédiée à ce que la page affiche (3 derniers lauréats par catégorie + couverture seen/total
+  calculée en SQL contre la bibliothèque), pas le repli. Déclencheur : la page paraît lente.
 - **`getPersonUpcoming`** passe les ids suivis en `in(...)` dans l'URL : casse au-delà de ~1 000
   personnes suivies. Remède = une vue jointe côté SQL.
 - **Pochettes iTunes** (Openings & Endings) : un appel par morceau, amorti par le cache local, ne
