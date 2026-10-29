@@ -1,0 +1,44 @@
+# Bleach completion date diagnostic — 2026-10-28
+
+Owner requested verification of a completion still displayed as2023 after marking the last episode today. Diagnostic only: targeted remote SELECTs through the dedicated read-only endpoint, code inspection and offline replay. No application change, production mutation, observer invocation, migration, deployment or Git mutation.
+
+## Confirmed state
+
+Personal Bleach row, TMDB30984: watched=true, in_progress=false, storageS2E50, season_aired=[366,50], season_episodes=[366,50], provider status=ended. Season years remain{1:2020,2:2023}, cour years empty, watched_at=2023-12-31T12:00:00, viewing_date={year:2026,month:10,day:28}. The owner/org-filtered history explicitly records FIRST_WATCH S2E49 on2026-10-20 and S2E50 on2026-10-28 with CONFIRMED DAY precision. The FINISHED_TITLE completion recorded later on2026-10-28 has UNKNOWN viewing-date precision, not a confirmed historical completion day. Subsequent season-coverage confirmations also have UNKNOWN dates.
+
+The stored AniList mapping has five entries: original Bleach366episodes, then four TYBW parts13/13/14/10episodes, ending at flat416. The current lens does not activate that overlay: shouldOverlay intentionally accepts only titles with at most one raw TMDB season; Bleach has two. This explains the two-season display despite available multipart metadata. It is a separate mapping limitation, not proof that the user watched all parts in2023.
+
+## Reproduced cause
+
+Starting from the real row reconstructed at S2E49, frozen clock2026-10-28, actual positionPatch(viewing) records last_watched_at today but stampSeasons preserves S2=2023 because the season is already reached. Actual markWatchedPatch then derives watched_at from maxYear(season_years), reproducing2023-12-31T12:00:00Z. StatusCard's watchedLabel also reads that map instead of the dated final completion. The Finish action uses the default claim intent without a history_date, so captureHistory emits an UNKNOWN-date completion even after today's correctly dated last episode. This is an inconsistency between a dated live viewing and the compatibility finish projection, not a cache/restart issue.
+
+Ignored proof artifacts: scripts/.shots/bleach-completion-audit-2026-10-28.json, reproduce-bleach-completion-2026-10-28.cjs, bleach-completion-reproduction-2026-10-28.json. Replay exits0 when it reproduces the2023 projection and UNKNOWN completion date. Application worktree stays clean apart from pre-existing untracked debug.log.
+
+## Correction direction, not implemented
+
+Distinguish explicit live completion from retrospective correction: today's deliberate finish can retain its real date, while a historical claim without a date must remain unknown. Display/global finish projection must follow that accepted completion evidence, rather than an old year attached to a growing aggregate season. Preserve S1=2020 and earlier-part viewing; never change the entire legacy S2 year to2026 to repair one final episode. Do not date all earlier episodes today or infer all historical cour dates from provider release years. Multipart display support for a raw two-season anime requires a scoped lens/mapping review rather than simply removing shouldOverlay's guard.
+
+Next: owner discussion/authorization of the targeted business correction with regressions for live final episode + Finish, historical corrections, season growth and no retroactive hour/activity movement. Final Wave2D review and Wave2E remain outside this diagnostic.
+
+## Owner-authorized implementation
+
+The owner subsequently requested the code fix and repair of personal Bleach data. Implemented locally; no remote application or Git mutation.
+
+- `lib/completion-date.ts` resolves a new completion from confirmed first consumption of its terminal aired episode, preserving YEAR/MONTH/DAY precision. Explicit input wins; an undated retrospective correction, rewatch or capture timestamp cannot manufacture a finish day. Existing dated completion survives unrelated edits to earlier season years. The compatibility projection and canonical completion receive the same accepted date at the existing service/atomic-command boundary.
+- The old component-local watched label is replaced by the shared completed-period label: the latest accepted finish projection can extend the period beyond old aggregate-season stamps. No change to the two-season/cour overlay policy or rating aggregation.
+- `captureHistory` no longer emits a redundant empty FIRST_WATCH when a completion assertion already records that transition. The status hook returns the saved finish projection rather than its coarse pre-save fallback. Existing status flags still come from watch-status.ts.
+- A compatibility watched_at change previously also moved legacy calendar contributions. The existing SQL personal command now captures the former calendar value once in protected legacy_consumption.calendar_date, including explicit NULL, before changing the projection. Analytics reads that retained date. Subsequent projection changes cannot overwrite it; authenticated callers still cannot patch the protected snapshot. No new column/table/function/permission.
+- Migration `20261028000000_watching_bleach_completion_date.sql` replaces that existing function, then repairs only the approved Bleach row and UNKNOWN FINISHED_TITLE assertion through the guarded command. It requires revision7, unchanged identity/position/year maps and the exact confirmed S2E50 evidence. Original assertion remains retained/retracted; one USER_CORRECTION successor dated2026-10-28 reuses its frozen ranges. The row becomes revision8. No earlier viewing/rating/rewatch date or membership is rewritten. Watchdog reference advances to20261028000000; all object counts stay unchanged.
+
+Full pre-repair backup is ignored/local: scripts/.shots/bleach-completion-backup-2026-10-28.json, SHA256 E289DF0B409F801D6E6940C5F39F561F23BB450B472A1C3FAF0274F2990C9EF8. It includes the exact row,7assertions/ranges,4ratings and rewatches. Provider ancestors were read only to faithfully satisfy foreign keys in the local clone.
+
+Executed PostgreSQL rehearsal proves date repair, predecessor retention, same schema counts, unchanged other media/ratings/rewatches/receipts, stale-state rejection, full rollback after invalid replacement, repeat idempotency, calendar-once/NULL retention and reserved-field forgery rejection. A separate replay imported the exact backup plus referenced provider evidence and4ratings: before/after Stats match for all-time/2020/2023/2026 hours, counts, activity, monthly stats, distributions and unknown counters. Total166.4h remains146.4h in2020,19.2h in2023 and0.8h in2026; old2023-12 Activity remains. Only the finish projection changes2023-12-31→2026-10-28 and label2020–2023→2020–2026.
+
+Real StatusCard browser fixture, actual local before/after data, external network blocked and read/mutation hooks mocked:390/768/1024/1440px all display2020–2026 after selecting repaired data, no horizontal overflow or page errors. All4screenshots read. Ignored proof: bleach-repair-verification-2026-10-28.json, bleach-completion-browser-results.json and bleach-completion-*.png. No production route/observer loaded.
+
+Targeted regressions cover the service's actual atomic request, delayed Finish, precision, explicit dates/unknown input, historical corrections, duplicates, partial progress, films, protected existing completion and legacy calendar invariants. Owner must apply the prepared migration before using the updated completion path. Remote schema registry was verified read-only through20261022000000 on linked HEGON femvhonlpafdajyamvcu; new migration remains pending. Final Wave2D review and Wave2E have not started in this correction block.
+
+Changed application files: completion-date.ts/test.ts (new), viewing-history.ts, history-analytics.ts, legacy-consumption.ts, watch-status.ts (comments), service.ts, hooks/useWatchActions.tsx, components/detail/StatusCard.tsx, styleguide coverage. Rehearsal: scripts/test-watching-completion-date.mjs (new) and optional flag in test-watching-milestone-receipts.mjs. SQL/reference listed above. Owner activation: npx supabase db push --linked; read-only remote post-verification follows application. No application/edge deployment or commit/push performed.
+
+
+Final validation:310 targeted tests/11files pass, TypeScript --noEmit --incremental false and affected-file lint pass. Schema reference/diff/CRLF and design-system coverage checks pass. Cached Supabase CLI2.121 normal db push --linked --dry-run succeeds against linked HEGON and lists only20261028000000_watching_bleach_completion_date.sql, with no seeds or roles. Latest npm CLI was not installed; the existing cached executable was used. Actual migration remains owner-only and unapplied. No remote personal write or authenticated observer was run.

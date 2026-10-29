@@ -308,3 +308,214 @@ asynchrone pour un découplage dont le projet n'a pas besoin aujourd'hui.
 **Refusé :** un bus d'événements générique pour toute réaction cross-module.
 **Ce qui la rouvrirait :** si 3+ modules réagissaient un jour à un même fait de façon non triviale
 (aujourd'hui seuls Goals et Habits réagissent à Watching, et de façon simple).
+
+## 2026-10-11 ? Watching Wave 1 locked contracts
+
+Chosen by the owner: annual series/anime scores use the arithmetic mean of seasonal/cour ratings attributed to the selected year, even for a single-year title; without eligible ratings the annual score is null. All-time title-rating behavior remains. Activity does not date a rating. Known aired zero stays zero; missing airing data may support explicitly estimated duration, never proof of airing. Identity is `movie:id` or `tv:id`; anime and series share TV identity. Directing excludes creators/production; TV creators retain their own classification. Legacy untyped TV crew is unverified and excluded from directing, rather than guessed.
+
+Seen With counts each collaborator once per experienced provider work, including engaged viewing. Your Person includes engaged works, separates completion, excludes future/unexperienced ratings, and uses released filmography wording. Top Picks retains rating-first/favorite-tie ordering, six visible items, and the existing SlidingPanel for all favorite-or-rated-at-least-8 qualifiers. Goals complete on actual count >= target, never rounded percentage. Provider count regression must preserve the previous coherent snapshot and personal posture; restoring previously dated content is not genuine growth.
+
+Rejected for this wave: event history/schema redesign, partial date precision storage, scoped rewatches, permanent achievements, broad provider versions, recommendation lab, Python/Data work, UI redesign and an invented completed-goal reopening policy. Reopening trigger: explicit Wave 2 authorization with historical facts and migration policy designed together. Provider corrections cannot be resolved safely from counts alone; already-degraded rows require verified evidence.
+
+## 2026-10-12 ? Wave 2A historical foundation
+
+Owner approved only the historical foundation/date precision/atomic capture slice. Chosen: two historical tables, a transactional personal command, server revisions, retained corrections and library-independent historical identity. Version 1 explicitly means partial prospective history. Unknown rewatch scope and cour coverage without frozen evidence stay unknown; input dates never inherit precision from legacy timestamp shapes. Current Stats/projections remain compatible. Details: [wave2a-history.md](wave2a-history.md).
+
+Rejected for 2A: full event sourcing, provider provenance, scoped rating lifecycle, scoped rewatch UI, achievement/Goal receipts, analytics cutover and historical reconstruction. Reopening trigger: explicit approval for the corresponding Wave 2B?2E slice. No production rollout was authorized or performed.
+
+---
+
+## 2026-10-12 — Poster consumption status colours
+
+**Chosen (owner request):** shared `StatusBadge.tsx` poster tone map uses muted violet
+`#a78bda` for Watching / In Progress and calmer indigo `#9295cc` for Caught up.
+Top 10 stays teal; Favorite red, Paused blue, Dropped yellow. Icons, badge structure,
+status derivation and all business logic remain unchanged. LibraryCard and MediaCarousel
+share the change; no global accent change, database change or Wave 2B work.
+
+**Rejected:** keeping consumption statuses in the Top 10 teal family, neon purple,
+or introducing Library-only colour overrides. Reopen only on an owner palette request.
+
+**Validation:** TypeScript, affected-file lint and diff whitespace passed; design-system
+coverage regenerated. Live Library and hover captures reviewed, including Favorite + status.
+Glyph contrast is 6.28:1 / 6.32:1; fills against surface-2 are 5.81:1 / 5.85:1.
+Poster artwork failed to load and a workspace error toast was present; artwork contrast
+could not be verified. No live Top 10 + status item in the loaded page; composition checked
+with a browser-only fixture using the existing ribbon dimensions and colour.
+
+---
+
+## 2026-10-12 — Top 10/status composition and dedicated orange family
+
+**Chosen (owner request, supersedes violet consumption palette above):** Watching uses
+`#dc956c` warm orange; Caught up uses `#c48768` calmer burnt orange in the shared poster
+tone map. Waiting For keeps `#c4b5fd`, Dropped `#fcd34d`, Paused `#7dd3fc`,
+Favorite `#f43f5e`, Top 10 the unchanged Watching vivid teal token (`#2dd4bf`).
+
+Library status sits 6 px right of the 26 px Top 10 ribbon; shared carousel status clears
+its 22 px ribbon by the same gap. Paired discs are 20 px, otherwise unchanged at 24 px.
+Favorite suppression under Top 10, icons, actions and mobile carousel placement are preserved.
+**Rejected:** stacked/overlapping marks and violet consumption statuses (reserved for future
+watchlist content). Reopen only on an owner palette/composition request.
+
+**Validation:** real LibraryCard render fixtures cover all requested combinations plus
+Top 10 + Favorite + Paused; real carousel card fixture checks Top 10 + Caught up.
+Playwright checks 6 px spacing, 20 px discs, Favorite suppression, violet Waiting For and
+top-right hover action. Fixture screenshot read; artwork replaced with a neutral test surface.
+TypeScript, affected-file lint, ds:coverage and diff --check passed. No business logic,
+status semantics, schema or Wave 2B changes. Existing live artwork/workspace loading errors
+remain outside this UI-only polish.
+
+---
+
+## 2026-10-13 — Full-text consumption badges on posters
+
+**Chosen (owner request, supersedes the circular status presentation):** shared StatusMark
+uses the design-system solid Badge, rounded-chip radius, text-micro typography, a bare
+icon and full English label: Caught Up, In Progress, Paused, Dropped. Library badges sit
+bottom-left; carousel Caught Up sits in the bottom-left content stack above the title.
+Text may wrap on narrow posters rather than truncate. Orange is softened to `#d7a17d`
+(In Progress) / `#c49577` (Caught Up); Paused blue and Dropped yellow are unchanged.
+Watchlist bookmarks, Top 10 styling/ranking, Favorite suppression, actions and state
+derivation remain unchanged. No schema or Wave 2B work.
+
+**Rejected:** circular icon discs, abbreviated labels and violet consumption badges.
+Reopen only on an owner poster-presentation request.
+
+**Validation:** TypeScript and affected-file lint passed; design-system coverage regenerated.
+Playwright rendered-component fixtures check all four labels, bare icons, bottom-left
+placement, text containment and Top 10/Favorite suppression across four viewport widths;
+carousel renders one Caught Up badge. Screenshots reviewed on a neutral fixture surface,
+not live artwork. git diff --check passed.
+
+---
+
+## 2026-10-13 — Smaller status badges, clearer orange
+
+**Chosen (owner visual feedback):** replace beige orange with warm orange `#f0a166`
+(In Progress) and burnt orange `#da8d55` (Caught Up). Shared solid badge uses size sm,
+20 px minimum height, text-caption (10 px) with normal tracking and 2 px vertical padding.
+Full labels, icons, other colours, placement and all business logic remain unchanged.
+**Rejected:** previous beige palette and 24 px minimum height. Reopen on owner feedback.
+**Validation:** four-status rendered fixtures pass on four widths; desktop screenshot read.
+TypeScript, targeted lint, coverage regeneration and diff whitespace checks run.
+
+
+## 2026-10-13 ? Consumption actions require available content
+
+Chosen (targeted owner request before Wave 2B): `lib/watchable.ts:isWatchableNow` is the shared availability gate for discover, detail, poster/list menus, quick-add and action handlers. Movies require a past/present release date. TV/anime use actual aired counts: known zero (including an empty known array) blocks consumption; positive counts permit it. Unknown counts fall back to premiere/season air dates. Without dates, an earlier release year or existing personal consumption supports incomplete legacy rows; lifecycle labels and announcements alone do not. Explicit future/invalid dates and known zero override those fallbacks.
+
+Want to Watch remains available; Waiting For and Library status derivation are unchanged. Correction/Undo retains historical correction semantics. Add actions reject consumption claims before writes. No schema, migration, provider provenance or Wave 2B work.
+
+Validation: 118 targeted domain/action/rendered-JSX tests pass, including upcoming media outside the library and released-media compatibility. TypeScript, affected-file lint and diff whitespace checks recorded in the current workstream status. Production personal write tests are excluded.
+
+**Owner refinement (2026-10-13):** orange slightly brighter: In Progress `#ffb477`,
+Caught Up `#eea064`. Further compact badge: 16 px minimum height, 4 px horizontal
+padding, 2 px gap, icons 10/11 px. Full text and semantics unchanged.
+Rejected: keeping the previous size/brightness; reopen on owner visual feedback.
+
+## 2026-10-13: Wave 2B evidence and rating lifecycle, ready for local review
+
+Chosen by the owner-approved2B brief: compact meaningful provider snapshots, separate accepted/latest heads, conservative identity/date growth classification, append-only scoped assertions with frozen membership and explicit reconfirmation. Legacy ratings retain unknown coverage. Cour identity is stable AniList ID; cache mismatch blocks edits and offers query refresh. An ordinal remap cannot seed a known old opinion into another subject, or discard an overwritten unbound legacy opinion.
+
+Rejected for2B: count/date-max-only reopening, progress-based auto-confirmation, global/single-season aliasing, payload archival, reconciliation/backfill, event sourcing and analytics cutover. Reopen broader scope only on explicit2C+ authorization. All local contracts pass; final build rerun is blocked by Google Fonts network. No remote migration, deployment, production personal mutation or Git write. Evidence and separate dirty-file manifest: [wave2b-provider-ratings.md](wave2b-provider-ratings.md).
+
+## 2026-10-18: Wave 2C historical viewing and analytics
+
+Owner-authorized2C reuses2A records/ranges and2B rating lineages. History is selected per event/coverage, never via a lifetime-complete interpretation of history_version1. Explicit untracked legacy facts remain where not shadowed; unknown precision/scope/duration remains unknown. Canonical rewatch IDs shadow legacy projections. New scope is explicit, IDs/ranges/duration frozen; movie runtime and cached actual episode runtimes can be retained, TV medians are not invented exact evidence. Nullable duration totals retain known subtotals and visible uncertainty.
+
+Rejected: reconstructing legacy dates from timestamp shapes, whole-title legacy rewatch inference, provider-current duration recomputation, rating confirmations as extra votes, current scope reassigning historical cour coverage, full event sourcing and schema/table proliferation. A local function-only migration is necessary for UNKNOWN-date rewatches and guarded snapshot context; remote application requires explicit approval. No production writes/deployment/Git commit. Reopen receipts/persistence only in explicit2D, reconciliation/backfill only in explicit2E. Implementation and evidence: [wave2c-history-consumption.md](wave2c-history-consumption.md).
+
+
+## 2026-10-20: Wave2C targeted blocker corrections
+
+Owner requires exact overlap subtraction, not a chronological frontier: first-watch ranges mask only their storage intervals, including intentional retraction tombstones; unrelated legacy estimates remain. Completion is fallback consumption only for frozen membership absent from first-watch/usable legacy/other completions; milestone duration stays unknown. Ambiguous completion retains uncertainty rather than inferred episodes. Cour conversion requires accepted season snapshot evidence with complete selected membership; aired counts alone never establish offsets. Missing/incomplete evidence blocks before RPC with an explicit refresh reason. Rejected: suffix cutoffs, globally ignoring/counting all completions, guessed cour offsets or broad reconstruction. Reopen reconciliation only with2E authorization; no SQL change or remote application in this block. Evidence: [wave2c-history-consumption.md](wave2c-history-consumption.md).
+
+## 2026-10-21: Wave2D permanent receipts, independent live progress
+
+Owner explicitly authorized the minimal Goals integration despite its general module freeze. Chosen:10 consumption milestones get append-once org/user/key receipts; Connoisseur/Hall of Fame remain current-opinion states. Eligibility uses fresh server-computed canonical proof, not client cache, legacy estimates, inferred dates or mutable episode-count projections. Reached-now receipts say FIRST_OBSERVED_SATISFIED, never invented historical unlock dates. Goals owns completion/date/receipt and independently displays current progress; ordinary regression never revokes completion. SQL owner/org isolation, service-only writers, source/definition validation and unique receipts enforce retries/concurrency. Explicitly retained legacy completion is not guessed into a new receipt.
+
+Rejected: client-authorized metrics, automatic revocation, bulk reconstruction, a new rules/Goals engine or broad admin UI. Invalid-original-proof correction requires a separately reviewed controlled migration preserving audit; ordinary recomputation cannot delete/revoke. Reopen legacy reconciliation only on2E approval. Details and evidence: [wave2d-milestone-receipts.md](wave2d-milestone-receipts.md).
+
+## 2026-10-21: accepted legacy dates and one canonical Marathoner metric
+
+Owner explicitly accepts ALL stored legacy watch dates as usable calendar data, including approximate pre-2024 month/day; no cutoff, suppression, date correction or backfill. This supersedes prior rejection of legacy timestamp-shaped calendar attribution. Explicit partial components and per-season/cour year stamps remain authoritative where available; unrelated coverage survives partial history adoption.
+
+Marathoner uses the SAME canonical mixed total-hours ledger as Stats, recomputed on the authenticated server's fresh fingerprinted snapshot. Accepted legacy runtime estimates count; unknown duration is not invented. Prospective receipt requires raw actual>=3000 and trusted observation time, never browser cache or rounding. Other milestone/Goal qualification remains unchanged. Rejected: Stats accepting hours while Marathoner silently discards them, guessed historical unlock dates or UI redesign around the temporary missing remote2D schema. Reopen only on explicit owner policy change. Evidence: wave2d-milestone-receipts.md targeted-corrections section.
+
+## 2026-10-21: complete calendar axis and faithful rating distribution
+
+Owner's2021/2022/2023/2026 reports reproduced. Stored title calendar facts survive conflicting annual scope-year stamps and later partial viewing_date adoption; this does not move annual hours/episode counts or invent monthly duration where attribution is unknown. Rejected: erasing valid stored calendar activity, shifting years to reconcile contradictory data, masking by UNKNOWN scope/year alone or fabricating zero-month consumption.12 UI month positions represent empty buckets as zero; a truly undated year retains the no-month-data state. Rating distribution now counts exact scores rather than rounded integers and shares numeric positions for points/ticks, with non-overshooting controls. Rejected: arbitrary axis padding beyond real extrema and a visual redesign. Reopen calendar reconciliation only on explicit owner authorization; no2E or DB correction here. Evidence: wave2d-milestone-receipts.md follow-up section.
+
+## 2026-10-21: close final2D date/identity/organization findings
+
+Owner authorized targeted fixes. Historical date selection follows existing scoped assertions instead of treating an equal year as proof that a projection belongs to the unrelated legacy remainder. Stable work identity survives retained local stubs and same-identity return; new UUIDs are not inferred duplicates. Stats and receipt metrics both use the selected organization, with owner filters, explicit organization-bound reads/cache and captured query closures. Rejected: global cross-org progress against org-specific receipts, dynamic-org reads stored under an older cache key, and losing local historical consumption when a library row is removed.235 tests and targeted re-review pass. No new schema, production operation or2E. Reopen only on a concrete failing case or explicit product-scope change.
+
+## 2026-10-21: estimated legacy date proposal explicitly requested
+
+Owner has no exports/backups and explicitly accepts an offline plausible-date proposal. This supersedes the prior refusal of arbitrary redistribution only for preparing a clearly labelled synthetic mapping:85 estimates across89placeholder candidates,4review cases,202other rows unchanged. Public release/airing facts supply bounds only; all proposed personal dates remain estimates without personal evidence. No production write or confirmed historical assertion authorized. Existing app/date/receipt rules remain unchanged. Rejected: calling these recovered true dates, shifting known years to hide contradictions, or applying without approval of the precise mapping. Reopen implementation only after owner reviews that mapping and estimated provenance.
+
+
+## 2026-10-21 ? Rewatch scope is a frozen viewing event
+
+Owner-approved targeted correction: full title by default; optional multiple DISPLAY seasons, translated through the existing anime lens. No episode-grid UX. Available membership is bounded by the selected day/period (end of month/year capped at today), retaining original watch precision. Episode IDs/ranges and accepted per-episode runtime are frozen; no later robot growth/remapping/runtime can enlarge an event. Representative TV runtime and browser-cache availability do not supply new canonical hours. Missing facts remain unknown; legacy rewatches require explicit scope confirmation, with atomic replacement and no automatic full-show assumption. Reopened only for an explicit future product request for episode-level rewatch tracking. Implementation/rollout evidence: rewatch-hardening-2026-10-21.md. Black Clover poster correction remains outside this task.
+
+
+## 2026-10-22: accepted consumption is the achievement ruler
+
+Owner explicitly approved implementation after the business audit. Achievement progress, explanations and server eligibility use the same accepted Stats ledger, including usable legacy viewing; Ever-Present uses Activity months including rewatches, Long Hauler uses finished frozen membership/accepted legacy completion. This supersedes the earlier strict-history-only achievement eligibility policy, not Goals' explicit-history completion contract. Permanent receipts remain immutable, first observed now, never backdated. Legacy first-watch coverage/runtime is captured once as an estimate, not promoted to confirmed assertions; canonical overlap replacement and frozen rewatch scopes retain precedence. Annual season artwork follows actual display-space contributions, not a minimum number of dated years. Rejected: implicit full-show legacy rewatches, future catalogue growth changing old hours, fabricated unlock dates, copying all global opinions into S1. Reopen only for explicit product policy or verifiable correction of an accepted estimate. Implementation, manifest and owner rollout: accepted-consumption-2026-10-22.md.
+
+
+## 2026-10-28: completion date follows accepted terminal viewing
+
+Owner explicitly authorized fixing the Bleach business bug and personal data. A deliberate new full-title completion may inherit the confirmed viewing date of its terminal aired episode; recorded_at, rewatches and inferred/imported dates are not substitutes. Explicit date input wins, undated retrospective corrections remain unknown, and already-dated canonical completion survives unrelated earlier-season edits. Old aggregate season years are separate historical facts: do not move all of S2 to the final-completion year. Before a compatibility watched_at update, the guarded command retains the prior legacy calendar value once (including NULL), preventing monthly activity from moving with the finish projection. No new schema objects or alternate status writer. Rejected: copying release years as personal watch dates, overwriting prior-season years, silently changing all multipart anime mappings, or backfilling other titles. Reopen only for explicit history correction or separately scoped multipart mapping work. Concrete owner-only repair/backup/proof: bleach-completion-diagnostic-2026-10-28.md, implementation section.
+
+
+## 2026-10-28: viewing periods and nested provider parts before final 2D review
+
+Owner explicitly reopened and authorized the multipart work with point 1. Hours follow recorded first-view periods, independent of finish and release dates; accepted legacy estimates remain where precision is absent. Multi-season anime keep TMDB seasons and storage coordinates, exposing verified AniList parts nested inside those seasons. No airing-gap heuristic, no mass recut or invented historical dates. Old opinions retain frozen membership and move behind history when their scope grows; unchanged completed parts remain independently rateable through the existing RPC. Qualified part votes supersede overlapping season aggregate votes, preventing duplicate annual scoring; global title opinion remains separate. New-year viewing and later growth cannot move old hours or enlarge rewatches. Incomplete provider membership/boundaries preserve accepted state. This supersedes the earlier exclusion of multipart mapping only for this approved nested representation; ordinary series without verified grouping fall back to episodes. No final2D review/2E started. Manifest, real Bleach replay, local SQL and UI checks: season-periods-and-parts-2026-10-28.md.
+
+
+## 2026-10-28: unknown rating coverage is not an obsolete opinion
+
+Owner explicitly approved the UI regression correction after discussion. Restore saved legacy season/cour ratings on posters and panels even without frozen membership. Display and write eligibility share identity checks but have distinct evidence requirements: readable does not mean verified or editable against an unknown catalogue. Keep known-remapping guards and reserve Previous rating for demonstrated growth. Replace duplicated technical warnings with one collapsed plain-language disclosure. Poster geometry is fixed2:3, independent of personal controls/history, with no content-driven artwork height. No data rewrite or rating qualification change. This supersedes the previous CURRENT-only score visibility rule. Reopen on a concrete identity/growth regression or owner design decision. Proof: season-panel-polish-2026-10-28.md.
+
+
+## 2026-10-28: annual Top Picks require first-view consumption
+
+Owner explicitly approved excluding rewatch-only titles from annual Top Picks. Eligibility comes from the existing accepted first-view ledger in the selected year, independently of favorite status or a high global score. Rewatches retain hours/activity/counts and all-time eligibility; a first viewing plus rewatch in the same year still qualifies once under the existing score/favorite rules. Unknown first-view dates cannot inherit a dated rewatch year. Rejected: moving first-view dates, clearing favorites/ratings, removing rewatches from Activity or maintaining a separate ranking source. Reopen only for explicit product policy. Evidence: top-picks-rewatch-fix-2026-10-28.md.
+
+
+## 2026-10-28: Top Picks identifies scored subjects, not seasons touched
+
+Owner explicitly chooses Hannibal S1–S2 without unrated S3 progress. Annual label/poster must consume the same selected vote scopes as its numeric score; S3 identifies one season, S1–S2 a range, S1, S3 separate seasons. A nested part label requires an independent part vote. Actual Bleach9 covers all50 S2 episodes, so display S2, not Part4. The owner separately confirms Part4 first viewing occurred in2026: add only missing E41–48 with YEAR precision, preserve existing E49/E50 days, exact frozen legacy duration and all ratings. Rejected: activity-derived rated labels, copying the S2 score into Part4, inventing months/days, overwriting season stamps or redistributing other titles. Controlled data-only owner migration20261028010000 prepared; later read-only evidence confirms it is already remotely applied (earlier not-applied assumption corrected2026-10-29). Proof: rated-scope-and-bleach-part4-2026-10-28.md.
+
+
+## 2026-10-28: owner defers Bleach S2 part-year reconciliation
+
+Owner now requests leaving current Bleach data unchanged until a later discussion of each part's personal viewing period. This supersedes the prepared Part4 year correction approval. At that time20261028010000 was mistakenly considered unapplied; fresh remote evidence later disproved this, and the exact migration file was restored2026-10-29. Its dedicated SQL rehearsal was archived under ignored scripts/.shots, outside the deployable migrations/test manifest; schema watermark restored to applied20261028000000. No remote rollback/data write. Previously applied completion-date repair and generic rated-scope UI remain. Reopen only after owner supplies/approves the part-by-part mapping; not an automatic2E backfill or a blocker to committing the validated2D code.
+
+
+## 2026-10-28: Wave2E initial read-only audit approved
+
+Owner approves controlled reconciliation framing and explicitly requires PROVEN/UNKNOWN/INFERRED classification, before/evidence/after review, and a stop before corrections. Unknown facts remain unknown; inferred dates stay inferred. Bleach part-year mapping remains excluded. Fresh audit discovers remote20261028010000 is already applied despite earlier documentation; report this evidence without reversing personal data or repairing history. No correction is authorized by this audit. Reopen implementation only after owner reviews concrete findings and approves the relevant correction block. Evidence: wave2e-reconciliation-audit-2026-10-28.md.
+
+
+## 2026-10-29: restore already-applied migration without changing history
+
+Owner explicitly authorizes exact repository restoration and local replay verification only. Restored original20261028010000 matches archived bytes and all remote stored statements;31versions align and watchdog watermark advances with unchanged object counts. No production mutation or migration repair. Literal fresh replay is not proven: native PostgreSQL lacks pg_cron and three existing data repairs reject missing personal prerequisites. Retain exact historical SQL; no fake records, empty replacement, silent skip or guard weakening. Discuss a reviewed fresh-bootstrap strategy before declaring full replayability. Evidence: migration-alignment-2026-10-29.md.
+
+
+## 2026-10-29: empty-database reconstruction is separate from2E
+
+Owner accepts migration alignment as resolved and explicitly defers full empty-database reconstruction as separate technical debt, nonblocking for2E. Do not modify already-applied historical migrations to make a clean bootstrap pass. Reopen only on an explicit dedicated reconstruction/bootstrap task.2E resumes read-only examination of Tokyo Ghoul, The Seven Deadly Sins and Fire Force; personal viewing assertions and all corrections require owner confirmation. Scope/year discrepancies are proven stored differences, not proof that the cursor or year map is the erroneous fact. See wave2e-three-anime-clarification-2026-10-29.md.
+
+
+## 2026-10-29: generic backwards correction retires invalid active assertions
+
+Owner authorizes generic implementation before any three-title production repair. Explicit first-view backwards corrections invalidate only contradicted identified scope, independently of Paused/Dropped. Frozen membership wins over ordinals; kept/unknown subjects and independent rewatches survive. The existing transactional personal command owns clipping/retraction, legacy map/membership/calendar cleanup, append-only score clears and immutable before/after audit. Removed the duplicate TypeScript backwards planner. No invented watch dates, blanket historical deletion, receipt revocation or automatic backfill. New progress_corrections is internal audit, never another analytical ledger. Previous leave-stamps-and-only-hide policy is superseded for explicit corrections. Applied migrations stay intact; new20261029000000 remains local. Three personal rows remain unchanged pending separate approval. Evidence: wave2e-backward-correction-2026-10-29.md.
+
+
+## 2026-10-29: Wave2E locked / completed
+
+Owner validates and locks the scoped reconciliation. Generic20261029000000 and separately authorized data-only20261029010000 are applied;33local/remote versions align, no pending. Only approved three-anime residuals retired with full audit; legitimate positions, posture, global ratings, annual/all-time hours and independent history retained. UNKNOWN stays unknown, Bleach stays excluded, empty-database reconstruction remains separate nonblocking debt. Do not reopen the reconciliation without new evidence or explicit owner scope. Final proof: wave2e-final-reconciliation-2026-10-29.md. Git commit/push remain owner actions; no next workstream authorized by closure.

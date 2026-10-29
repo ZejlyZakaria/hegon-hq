@@ -69,3 +69,50 @@
 
 ---
 
+## Wave 2 triggers from the 2026-10-11 audit follow-up
+
+| Deferred work | Trigger / required evidence |
+|---|---|
+| Legacy date reconciliation (prospective YEAR/MONTH/DAY capture is implemented in Wave 2A) | Explicit Wave 2E approval; no precision inference from timestamp shapes. |
+| Permanent achievement unlock evidence/date | Historical model approved; Wave 1 corrects calculations only. |
+| Provider provenance/versioning and repair of already-degraded Kuroko rows | Verified production row and prior coherent provider facts; distinguish restoration, corrections and genuine growth. Wave 1 guards count regression but cannot infer a lost baseline. |
+| Reopening Watching-linked completed Goals after edits | Owner defines completion/reversal policy in Goals audit or Wave 2; active goal exact-count completion fixed now. |
+| Legacy TV crew role enrichment | Provider refresh with explicit jobs/created_by; do not infer director from legacy roleless JSON. |
+
+Wave 2C implements prospective scoped rewatches and history-aware analytics; locked and function migration remotely applied/verified2026-10-20. Wave2D is deferred to the next session. Evidence: [wave2c-history-consumption.md](wave2c-history-consumption.md). Remaining legacy reconstruction is explicitly Wave 2E; no automatic backfill.
+
+Wave2D permanent consumption milestones and Goals completion receipts pass final local validation2026-10-28; remote migrations and watchdog reference are verified. Wave2D is now closed for the validated scope: deployed watching-anime-cours-sync v11 source verified against commit d2a041a. Its next cron execution is routine monitoring; no post-deploy runtime proof is asserted. See final-wave2d-review-2026-10-28.md and the proposed wave2e-reconciliation-scope.md. Older dated rollout notes below are historical. [Manifest and evidence](wave2d-milestone-receipts.md). Remaining triggers: explicit2E approval for legacy reconciliation/backfill; proven invalid original receipt plus owner-reviewed audit policy for controlled correction/invalidation tooling. No ordinary live recomputation revokes a receipt.
+
+2026-10-21 owner amendment: accepting existing legacy dates in calendar analytics is implemented now, including pre-2024. It requires no reconciliation/backfill and supersedes the earlier blanket no-legacy-calendar-inference policy. Two targeted pre-review2D issues corrected locally; final review not started. Remote2D migration remains pending owner approval after review.
+
+RESOLVED2026-10-21, final2D review blockers (regressions/re-review documented below): preserve legacy month/day for same-year partial history; retain stable work identity for deleted local titles; align Stats/history/rewatch/cache organization scope with receipts. All three have deterministic local counterexamples in wave2d-milestone-receipts.md. No2E work required.
+
+The three final2D findings are corrected: same-year scoped calendar, stable deleted-local identity, owner/org-scoped Stats/history/rewatch/cache and captured receipt organization.235 targeted tests and re-review pass. Remaining rollout trigger: explicit owner authorization for controlled remote migration20261021000000 and read-only post-checks. No2E started.
+
+Owner-requested date diagnostic2026-10-21 completed read-only. Trigger for controlled legacy date corrections: personal evidence source plus reviewed before/after mapping and explicit write authorization; current signatures alone cannot recover real months. Existing accepted-legacy-date policy remains until owner chooses otherwise. Screenshot layout issue: unknown-duration paragraph is a direct chart-grid child; group with Hours Watched on the next authorized UI correction. Evidence: legacy-date-diagnostic-2026-10-21.md. No2E started or mutation script executed.
+
+
+Owner-deferred2026-10-28: reconcile Bleach S2 part-by-part viewing years only after a dedicated owner discussion and reviewed mapping. Keep current production history unchanged; abandoned Part4-only migration is outside supabase/migrations, archived in scripts/.shots/deferred-bleach-part4-viewing-year.sql. Do not revive it automatically during2E. Generic Top Picks rated-scope labels remain validated.
+
+
+Wave2E initial read-only audit completed2026-10-28: remote-only20261028010000 already applied (fresh registry/body/current-row evidence supersedes older never-applied notes), while local folder/reference stop at20261028000000. Trigger for repository alignment: owner review and approval of audit finding, preserving the applied migration without remote replay/repair. Three anime cursor/year conflicts require personal clarification before changing data; current Stats already ignores the four future stamps. Bleach part-year reconciliation remains excluded. Report: wave2e-reconciliation-audit-2026-10-28.md. No automatic cleanup/backfill.
+
+
+2026-10-29 migration registry alignment RESOLVED: exact archived20261028010000 restored and verified against remote;31/31versions and watchdog watermark match. New proven replay limitation: native local baseline lacks pg_cron, and existing targeted data repairs20261021010000/20261028000000/20261028010000 require historical personal prerequisites. Trigger for fixing full fresh replay: owner-reviewed bootstrap/baseline or data-repair strategy, preserving applied SQL identity and production data. No automatic skip or fake seed. Three anime and Bleach reconciliation remain unchanged. See migration-alignment-2026-10-29.md.
+
+
+## Separate technical debt - empty-database reconstruction (owner decision2026-10-29)
+
+Not a Wave2E completion gate. Native PostgreSQL lacks Supabase extensions, and three historical data-repair migrations require original personal prerequisites. Preserve applied migration files unchanged; no empty replacement, fake personal seed or artificial registry repair. Trigger: owner explicitly opens a dedicated bootstrap/reconstruction or clean-environment CI workstream. That work must define an auditable schema/data repair replay policy and prove it against an appropriate local Supabase environment. Evidence: migration-alignment-2026-10-29.md. Current2E continues with owner clarification of Tokyo Ghoul, The Seven Deadly Sins and Fire Force; no data correction authorized.
+
+
+2026-10-29 generic backwards-cleanup correction is locally implemented and validated; new20261029000000 is pending owner application. Trigger for the three residual anime repairs: explicit owner approval of the exact mapping in wave2e-backward-correction-2026-10-29.md after review of the generic mechanism. Existing true positions are confirmed; no need to ask which cursor is right again. Do not fabricate a backwards transition or assume this no-backfill migration cleans already-correct cursors. Bleach excluded; empty-DB reconstruction remains separate nonblocking debt.
+
+
+2026-10-29 targeted pre-migration review blockerR1: invalid/retained cour identities sharing ordinal and numeric score cause retained active compatibility score loss. Trigger: immediate local fix + regression + re-review before any20261029000000 application. Pending set/dry-run are clean but do not waive business readiness. No production change; three anime untouched. See wave2e-backward-review-2026-10-29.md.
+
+
+R1 follow-up2026-10-29: local stable-identity fix and exact PostgreSQL regression PASS, including both identity timestamp orders and different-score controls; mutation control proves the old faulty rule fails. READY FOR RE-REVIEW, not remote application approval. Next trigger: fresh targeted re-review/preflight, then owner-run rollout if safe. No three-anime correction. Report: wave2e-r1-fix-2026-10-29.md.
+
+
+2026-10-29 Wave2E LOCKED / COMPLETED by explicit owner approval: generic migration and separately authorized three-anime cleanup applied via normal versioned CLI push;33/33aligned, no pending. R1, stale maps and Tokyo false calendar resolved with full audit; real-code replay retains all hours and legitimate personal data. See wave2e-final-reconciliation-2026-10-29.md. No further correction queue for these three titles; UNKNOWN and excluded Bleach remain unchanged. Full empty-DB bootstrap debt stays separately deferred until its owner-approved workstream.
