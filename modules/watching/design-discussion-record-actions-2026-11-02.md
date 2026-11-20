@@ -1,0 +1,7 @@
+# Watching design discussion / personal controls - 2026-11-02
+
+Owner asks for critical design discussion and has not approved proposed system-wide changes. Implemented ONLY explicitly requested personal-card heart/menu responsive correction:32px painted controls inside44px touch targets;32px targets on hover-capable devices. Existing state/actions preserved; favorite exposes aria-pressed. No changes to add appearance, people sidebar, badge sizes, trailer, temporal typography or Caught Up position in this task. All remain proposals requiring owner go.
+
+Inspection: AddMark is shared by media discovery surfaces, while FollowMark has its own follow semantics/style. PersonAccolades still uses the older summary/ribbon treatment. Poster StatusMark uses10px and personal StateChip12px but both share tight vertical padding; explicit compact/regular sizing is preferable. Last Watched Caught Up is still above title. Temporal Badge flag is10px semibold vs genre overlay11px medium, explaining different typography. Sidebar See all/Manage use shared quiet buttons; trailer is a custom on-artwork rounded pill.
+
+Validation for actual correction:41targeted tests, TypeScript, affected lint and whitespace check pass. Actual StatusCard browser fixture at390/768/1024/1440, touch and mouse:32px visible backgrounds,44/32px targets, aligned nonoverlapping buttons; favorite toggle and menu opening pass. Screenshot inspected. Coverage regenerated. No production/Git/deploy mutation.

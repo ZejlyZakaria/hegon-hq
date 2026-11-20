@@ -1,0 +1,9 @@
+# Dark status pills / CI harness - 2026-11-02
+
+Owner explicitly reopens only consumption-status badges using the supplied ChatGPT reference: dark tinted pill, coloured text and left icon, plus a black poster veil. This supersedes the rejected pastel experiment without restoring it or changing accepted hover, rail alignment, images, ratings or data.
+
+One globals.css status skin now serves StatusMark and the personal-card StateChip. Orange watching, green caught-up/completed, amber paused, red dropped and blue watchlist. Existing bookmark priority semantics remain intact. Library posters bearing consumption status and caught-up carousel artwork receive a pointer-transparent black45percent veil. No veil on ordinary completed library posters or bookmark-only cards.
+
+CI failure was a test harness integration omission: robot-handlers.test.ts did not register the real provider-refresh helper imported by the actual AniList entrypoint; provider_heads reads also needed their own empty-head fixture instead of returning anime_cours rows. Registered the real helper and corrected the transport fixture. Production worker/guards are unchanged; existing failure/cache preservation assertions retained.
+
+Validation: full Vitest48files/791tests pass, including38actual-handler regressions plus2bootstrap tests. TypeScript passes, Knip CI passes, schema-reference gate passes; coverage regenerated444off-system hits. Actual LibraryCard/StatusMark/MovieCard fixtures at390/768/1024/1440 have left icons, dark fills, pill shape, four conditional veils, no overflow or runtime errors; screenshot read. No live authenticated production or deployment/remote CI success claimed. Full local lint includes unversioned scripts/.shots and fails there; tracked-source/affected lint is checked separately. No migration, production data changes, Git staging/commit/push or deployment.
