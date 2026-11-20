@@ -519,3 +519,107 @@ Owner authorizes generic implementation before any three-title production repair
 ## 2026-10-29: Wave2E locked / completed
 
 Owner validates and locks the scoped reconciliation. Generic20261029000000 and separately authorized data-only20261029010000 are applied;33local/remote versions align, no pending. Only approved three-anime residuals retired with full audit; legitimate positions, posture, global ratings, annual/all-time hours and independent history retained. UNKNOWN stays unknown, Bleach stays excluded, empty-database reconstruction remains separate nonblocking debt. Do not reopen the reconciliation without new evidence or explicit owner scope. Final proof: wave2e-final-reconciliation-2026-10-29.md. Git commit/push remain owner actions; no next workstream authorized by closure.
+
+
+## 2026-10-29: concise Top Picks and bounded native image sources
+
+Owner approves hiding annual season labels only for complete first-view work and complete rated scope in that year; keep partial/multi-year/cour identifiers. Remove film release-year fallback in card/panel, including no fallback when a whole-work label is hidden. Scores/qualification remain unchanged. Reuse existing image helper for native density/width candidates under global unoptimized configuration, keep compact40pxdensity/blur and lazy loading, bound long poster rails, avoid eager fallback preloads. No universal native-detail enhancement claim; actual original resolution still limits quality. Evidence/manifest: image-quality-and-top-picks-implementation-2026-10-29.md. Reopen on contradictory viewing scope or measured image-quality/performance evidence.
+
+
+## 2026-10-30: same opinion only for proven equivalent single scope
+
+Owner approves global/single-season bidirectional edits only where accepted complete membership and actual progress prove equivalence; anime needs accepted mapping, with no independent parts. One append-only scoped opinion, compatibility projections synchronized inside existing transaction, no historical backfill. New season/part breaks equivalence; never average global opinion automatically or propagate it into new scopes. Preserve original opinion audit, unknown dates and existing annual attribution on scoped edits. Nested part controls retain stable-identity/snapshot guards; missing accepted evidence is fixed by robot bootstrap, never by trusting a legacy cache or copying a season grade into each part. Rewatch uses one visible entry and one editable-date form with shared compact controls. Reopen only on owner policy change or contradictory membership evidence. Migration20261029040000 and worker deployment are pending owner rollout. Evidence: single-scope-ratings-and-rewatch-2026-10-30.md.
+
+
+## 2026-10-30: public viewing timeline and film default date
+
+Owner explicitly rejects the raw persistence journal as Viewing history. Consumption rows and terminal completion context form the UI; rating milestones, superseded assertions and recording-date audits remain internal. No deletion of audit to improve presentation. Keep frozen rewatch scope/duration and edit/remove through one timeline; translate anime summaries through the existing lens. Owner explicitly changes the film claim default: marking a film watched now records today's local day unless a past/partial/unknown date was supplied. The existing atomic service path owns this rule for insertion and update. Existing rows and explicit historical corrections are not retrospectively dated. Reopen for contradictory personal evidence or explicit product change. Evidence: viewing-timeline-and-film-date-2026-10-30.md.
+
+
+## 2026-10-30 — Personal state card and contextual viewing panel
+
+Owner approves the revised visual direction: state/action on the petrol card, streaming providers separate, one panel for useful first-view part details and independent rewatches. Ordinary season dates stay on the season surfaces; no redundant history for an unconsumed or ordinary no-rewatch title. Explicitly reject episode-click journals, raw audit/recording/rating assertions and guessed dates for nested parts. Use the accepted Stats ledger for minutes/coverage; full-title completion is not another consumption. Preserve first-view unknowns and frozen independent rewatches. Implementation requires owner visual acceptance before declaring UX completed; reopen presentation on that feedback, not by adding another history model.
+
+
+## 2026-11-02 - Watching pastel labels and stable hover
+
+Owner chooses pastel pill badges inspired by the supplied reference across Watching; status colours carry semantic meaning. This supersedes earlier dark flag treatments in this module. Shared Badge gains an opt-in pastel variant; Watching consumes it through one adapter and globals.css palette. Keep scores/hearts/bookmarks/rank ribbons as distinct marks, not generic text pills. Last Watched date/caught-up label belongs beside the title. Zoom artwork only to keep labels stable. For You direct Want to Watch reuses the existing AddMark writer and remains keyboard/touch accessible. Reopen only on owner visual feedback or a measured contrast/readability problem.
+
+
+## 2026-11-02 - Owner rejects pastel badge experiment
+
+Supersedes the earlier same-day pastel-label/image-only-hover decision: restore the pre-experiment badge skin/positions and whole-card MediaCarousel hover. Keep independent For You add, keyboard access, cache consistency, cleanup and Stats memo optimization. Rail cards must have enough edge clearance to visibly expand past their original bounds while keeping content aligned. Reopen badge redesign only on a new owner request; do not retain the rejected adapter or alternate skin as dead code.
+
+
+## 2026-11-02 - Dark status pills from owner reference
+
+Owner explicitly reopens status presentation: dark tinted pills, coloured labels, left glyph and conditional black artwork veil. Share palette/geometry in globals.css between poster statuses and personal state card. Supersedes rejected pastel skin; preserve accepted whole-card hover, rails, distinct score/heart/bookmark marks and semantic classification. Reopen on owner visual feedback. Evidence: dark-status-ci-2026-11-02.md.
+
+
+## 2026-11-02 - Artwork actions, status roles and Person sidebar
+
+Owner approves discussed hierarchy: white media Add, dark person-plus Follow/dark Dismiss with shared geometry;20px compact status/26px regular status; inline Last Watched Caught Up; neutral11px timestamps; shared overlay trailer Button and quiet editing/subtle navigation. Person inherits card/header/counter presentation using Panel and shared AccoladesSummary while preserving distinct person award scope and journey metrics. Genre pills and accepted hover/rail alignment unchanged. Supersedes prior discussion-only note; reopen on visual feedback or proven accessibility issue. Implementation: design-harmony-2026-11-02.md.
+
+
+## 2026-11-02 - Correct position is not Resume watching
+
+Owner chooses consistent position/pencil access across active and suspended series/anime. Correction preserves Paused/Dropped/reason at all positions, even aired frontier or finished endpoint. Resume/Finish express explicit intent; correction does not stamp today. Preserve2E transactional backwards cleanup and independent history. Supersedes the old paused-frontier resume and correction-year stamping. Person highlights use80px full-width rows; merge identical highest/gem entries. Weekly Caught Up remains, sharing compact geometry with neutral position. Reopen only for explicit product change or contradictory regression evidence. See correction-stance-highlights-2026-11-02.md.
+
+
+## 2026-11-03 - Broadcaster and animation studio are distinct facts
+
+TMDB networks must display as Network, never Studio. Legacy studio column retains its documented compatibility source (TV network / film production company); animation credits belong separately to each stable AniList entry and include only primary animation studios. Unknown cache remains unknown. Reuse cron->cache->app and existing query key. Metadata enrichment must not create provider scope growth or touch personal records. See network-animation-studios-2026-11-03.md; owner rollout pending.
+
+
+## 2026-11-04 - Consumption, correction and availability
+
+Owner-approved: a correction fixes recorded progress without creating a viewing date/frontier timestamp; retain known historical year/precision, UNKNOWN when scope evidence conflicts. caught_up_at is never Last Watched recency. Newly released seasons/identified parts after a completed scope require explicit resumption; weekly active follow-up continues. resume_required is the persisted availability hold, with requiresResume and activityBucket as shared projections; consumed-library engagement is retained. Migration prospective only; no repairs to old data. Rejected: max(caught_up_at) sorting, automatic resume on release, date-gap part inference and automatic dating of corrections. Reopen only on a deliberate product decision; Updates will consume these rules rather than become a status writer. Local implementation/report: tracking-intent-2026-11-04.md. Remote rollout pending.
+
+## 2026-11-05 — Initial image reveal belongs to each section
+
+Owner-approved: coordinate visible native image loading/decoding independently for each hub section, keep exact card geometry under its skeleton, skip cache replay and retain visible content on refetch. A bounded2500ms deadline permits late artwork instead of blocking forever. Reject whole-page image barriers and per-card stagger; reconsider only if measured owner-visible behavior warrants it. Status-card changes retain a single content shell and animate height, not overlapping identities or scaled text.
+
+## 2026-11-05 — Completed recency uses its completion projection
+
+Supersedes unconditional max(watched_at,last_watched_at) for completed claims. watched=true ranks and labels only by valid watched_at; unknown completion remains unknown. Ongoing titles retain genuine forward-viewing recency. Raw legacy activity stamps may be historical claim dates, so equality with caught_up_at or recency alone is not proof of viewing. Reopen only with an explicitly modeled independent viewing requirement/evidence; do not discard real ongoing activity or invent a date to clean a rail.
+
+## 2026-11-05 — Updates is personal release availability, not a consumption feed
+
+Owner approved All/Series/Anime, Available now, Coming next by month and DateTBA, using existing Watching materials/size tokens. Paused/dropped are secondary opt-in. Existing started scopes do not emit weekly episode notifications. Exact accepted anime grouping only; absent dates remain unknown, and a returning lifecycle alone cannot invent a new season. Explicit Resume uses the single writer and opens the fiche without moving position or dating a viewing. No new robot/storage schema required for this version. Reopen feed/discovery/notification scope only with an explicit product request.
+
+
+## Updates release news / visual revision — 2026-11-05
+
+Owner approved replacing backlog-style Available now with dated release news and larger vertical Seasons-token posters. One evolving card per explicit season/accepted part; unseen content during confirmed airing, then a 30-day release window. Old unwatched seasons are not news; timestamps of edits/robot checks are not release evidence. Paused upcoming/TBA announcements stay visible, dropped requires opt-in. Continue is navigation; explicit Resume retains the single writer. Four columns on desktop, responsive fewer columns, unchanged 144px poster ladder. Initial horizontal full-width rows and anime-only catalogue evidence are superseded. Reopen the release window only on a product request; do not add historical viewing dates to improve news coverage. Implementation/evidence: updates-page-2026-11-05.md.
+
+
+## Updates owner visual correction / Available now only — 2026-11-05
+
+Plain poster-grid presentation rejected. Owner authorizes section-by-section work: Available now backdrop carousel first, future Coming next/TBA compact poster-left cards remain discussion-only. Include genuinely recent Want to watch series/anime releases, never old backlog or automatic resume. Hide empty Available section. Four desktop cards, mobile peek, aligned navigation and See all panel beyond four. Current implementation affects Available only; historical posters/other sections unchanged. Evidence and limitations: updates-page-2026-11-05.md, latest owner-review section.
+
+
+## Updates announcement cards implemented — 2026-11-05
+
+Owner authorizes both remaining sections: compact poster-left graphite cards for Coming next/TBA, shared visual family and full-card detail link, no notification/follow machinery. Existing date chronology and eligibility retained.80px/2:3 poster token,1/2/4columns and matching skeleton. Available carousel unchanged. Supersedes discussion-only implementation status above; visual acceptance still pending.
+
+
+## Updates native carousel / full watchlist eligibility — 2026-11-05
+
+Owner approves actual shared MediaCarousel reuse, removal of Updates heading/redundant View details, first-visible header filters,112px announcement posters with no image zoom, and Want to watch eligibility in ALL three sections. Shared carousel exposes typed custom rendering while retaining one layout/navigation/reveal. Native5desktop/mobile portrait geometry wins over the temporary4desktop/85%-mobile private rail. No automatic watchlist resume, invented scope/date or production data correction. Owner visual validation pending; prior first-section-only eligibility superseded.
+
+
+## Updates announcement rails / default priority — 2026-11-05
+
+Owner confirms four desktop announcement cards, horizontal rail for Coming next AND TBA, no repeated month heading, poster-derived ambient background matching Don't Miss,112px sharp posters with density-aware sources, and started-before-watchlist TBA order without a filter. Remove suspended opt-in control/state: paused announcements visible, dropped excluded by default. Available artwork unchanged. Supersedes the three-column announcement grid and suspended toggle. No data correction/schema/deploy.
+
+
+## 2026-11-11: optional AnimeThemes lookup through HEGON
+
+Owner explicitly requested a resilient same-origin boundary after browser CORS/503 failure, preserving favorites/player and early track display. Optional public catalogue discovery remains on-demand behind authenticated Next, validated successful-result caching and bounded failure handling; it does not become a status/date source or introduce a new DB catalogue. Saved favorites remain the durable personal collection. This is the narrowly approved enrichment exception to normal cron/table reads. Reopen a robot/catalogue persistence design only if cold-outage availability or exact provider-ID mapping is requested. Read-only audit and verification: anime-themes-audit-2026-11-11.md.
+
+
+## 2026-11-17: deletion removes active consumption, not the audit
+
+Owner explicitly rejects deleted test titles contributing to Hours Watched. Supersedes the prior retained-history synthetic-title policy for active analytics. Only history/ratings attached to a current owned row with matching work identity can contribute to Stats, calendars, goals and new achievement observations; re-adding a work cannot revive orphan records. Audit rows and already-issued permanent receipts stay intact. No production backfill. Reopen only for an explicit separate archive/history feature.
+
+Season/cour ratings require the full announced scope to have aired and been watched; caught-up alone is insufficient. Independently complete parts remain rateable; missing membership blocks new assertions without erasing historical opinions. Prospective private SQL guard, no date invention. Owner confirms the current Dragon Ball Z (rather than Kai) identity is correct; retain it.

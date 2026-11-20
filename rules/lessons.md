@@ -59,3 +59,15 @@
 - **Challenger toute décision** contre Linear / Apple / Vercel ; jamais « Apple » en public (→ « next level »).
 - **Condition 3 du gel** : ne toucher aucun module non audité, même pour une ligne.
 - **Mode ami** = détendu, sans tableaux. Suggérer claude.ai / ChatGPT si la tâche n'a pas besoin d'un agent de code.
+
+
+- **Une note lisible n’est pas une preuve de périmètre** : appliquer le garde d’écriture/`CURRENT` à l’affichage a masqué toutes les notes legacy (Watching,2026-10-28). Séparer identité, lecture de l’opinion sauvegardée et validation des épisodes ; UNKNOWN ne prouve pas GROWTH. Tester une vraie note legacy sans catalogue accepté, en plus des fixtures parfaitement renseignées.
+
+- **Viewing history is not the assertion journal** (2026-10-30): exposing raw enums, film Season0, rating-triggered completion milestones and tombstones made real viewings unreadable. Keep append-only audit internal, project a tested consumption timeline, and verify real screenshots plus explicit prospective date semantics.
+
+- Partial carousel hover QA: Playwright locator.hover() may auto-scroll the target fully into view, hiding clipping bugs. Hover physical coordinates inside the visible fragment and assert scrollLeft stays fixed; check image AND caption paint beyond the viewport boundary. Reproduced/fixed Best Episodes2026-11-02 (partial-episode-hover-2026-11-02.md).
+
+
+- Watching2026-11-04: caught_up_at can be created by historical corrections and exist on ended titles; never use it as consumption recency. Silo legitimately uses last_watched_at, Hill House must retain watched_at. One latestViewingAt helper owns order and badge; release availability is not resumption, and held titles still belong to consumed-library summaries.
+
+- Watching2026-11-05: last_watched_at can itself be a legacy claim stamp (Promised Neverland2026 vs completion2022). Excluding caught_up_at alone was insufficient: completed recency uses its completion projection; ongoing recency keeps actual forward activity. Exact old user action is not recoverable without audit evidence.

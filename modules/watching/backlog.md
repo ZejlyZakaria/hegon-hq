@@ -75,7 +75,7 @@
 |---|---|
 | Legacy date reconciliation (prospective YEAR/MONTH/DAY capture is implemented in Wave 2A) | Explicit Wave 2E approval; no precision inference from timestamp shapes. |
 | Permanent achievement unlock evidence/date | Historical model approved; Wave 1 corrects calculations only. |
-| Provider provenance/versioning and repair of already-degraded Kuroko rows | Verified production row and prior coherent provider facts; distinguish restoration, corrections and genuine growth. Wave 1 guards count regression but cannot infer a lost baseline. |
+| Kuroko catalogue/personal restoration COMPLETED2026-10-29 | Live TMDB25/25/25, prior personal audit and explicit owner confirmation reconcile75episodes/30h in2018, completedS3E25,8.5scores. See kuroko-reconciliation-2026-10-29.md. Reopen only on new contradictory evidence; no weakening of generic regression guards. |
 | Reopening Watching-linked completed Goals after edits | Owner defines completion/reversal policy in Goals audit or Wave 2; active goal exact-count completion fixed now. |
 | Legacy TV crew role enrichment | Provider refresh with explicit jobs/created_by; do not infer director from legacy roleless JSON. |
 
@@ -116,3 +116,10 @@ R1 follow-up2026-10-29: local stable-identity fix and exact PostgreSQL regressio
 
 
 2026-10-29 Wave2E LOCKED / COMPLETED by explicit owner approval: generic migration and separately authorized three-anime cleanup applied via normal versioned CLI push;33/33aligned, no pending. R1, stale maps and Tokyo false calendar resolved with full audit; real-code replay retains all hours and legitimate personal data. See wave2e-final-reconciliation-2026-10-29.md. No further correction queue for these three titles; UNKNOWN and excluded Bleach remain unchanged. Full empty-DB bootstrap debt stays separately deferred until its owner-approved workstream.
+
+
+## Anime Themes follow-up (2026-11-11)
+
+- Exact provider-ID binding / renamed-song identity migration: trigger is a demonstrated ambiguous title match or favorite split after an upstream rename. Current title/synonym/year selection is tested; do not rewrite existing favorite natural keys without a migration plan.
+- More precise iTunes cover verification: trigger is a demonstrated wrong song/artist cover. Current first-result art remains optional and cannot block tracks.
+- Durable full theme catalogue mirror: trigger is an explicit requirement to discover never-cached themes during upstream outage. Current24h successful Next cache and process-local failure cooldown do not guarantee cold-instance offline availability.
